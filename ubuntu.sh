@@ -69,6 +69,15 @@ nkr_dpkg(){
     fi
 }
 
+nkr_composer(){
+  local composer=$1
+    if [ $(composer global show 2>/dev/null | grep -c "$composer") -eq 0 ];
+      then
+        nkr_echo "Installing $composer"
+        composer global require "$composer"
+    fi
+}
+
 export_to_zshrc() {
   local text="$1" zshrc
   local skip_new_line="${2:-0}"
@@ -189,6 +198,8 @@ nkr_install rsync
 nkr_install tmux
 nkr_install putty
 nkr_install expect
+nkr_install xrdp
+nkr_install samba
 
 # Password Safety
 nkr_install passwdqc
@@ -346,7 +357,8 @@ nkr_install openssl
 nkr_install php7.4-json
 nkr_install php7.4-mbstring
 nkr_install php7.4-zip
-composer global require laravel/installer
+# composer global require laravel/installer
+nkr_composer laravel/installer
 
 # docker
 # apt-cache policy docker-ce
@@ -523,9 +535,14 @@ fi
 nkr_install jq
 nkr_install xsel
 nkr_install libnss3-tools
-composer global require cpriego/valet-linux
+# composer global require cpriego/valet-linux
+nkr_composer cpriego/valet-linux
 # restarting network-manager
-valet install
+if [ ! $(composer global show 2>/dev/null | grep -c "valet") -eq 0 ];
+  then
+    nkr_echo "Installing valet"
+    valet install
+fi
 
 #restart cache
 sudo fc-cache -f -v
