@@ -4,42 +4,70 @@ nkr_echo() {
   printf "\n$fmt\n" "$@"
 }
 
+nkr_sources() {
+  local ppa="$1"
+  local source="$2"
+    if [ $(grep ^ /etc/apt/sources.list /etc/apt/sources.list.d/* 2>/dev/null | grep -c "$ppa") -eq 0 ];
+      then
+        nkr_echo "$ppa add successful"
+        echo "$source" | sudo tee -a /etc/apt/sources.list.d/"$name".list
+    fi
+}
+
+nkr_ppa() {
+  local ppa="$1"
+    if [ $(grep ^ /etc/apt/sources.list /etc/apt/sources.list.d/* 2>/dev/null | grep -c "$ppa") -eq 0 ];
+      then
+        nkr_echo "Adding ppa:$ppa"
+        sudo add-apt-repository -y ppa:$ppa;
+    fi
+}
+
+nkr_ppa_install() {
+  local ppa="$1"
+    if [ ! $(grep ^ /etc/apt/sources.list /etc/apt/sources.list.d/* 2>/dev/null | grep -c "$ppa") -eq 0 ];
+      then
+        nkr_echo "Installing $ppa"
+        sudo aptitude install -y "$ppa";
+    fi
+}
+
 nkr_install() {
   local package="$1"
-
-  if [ $(dpkg-query -W -f='${Status}' "$package" 2>/dev/null | grep -c "ok installed") -eq 0 ];
-  then
-    sudo aptitude install -y "$package";
-  fi
+    if [ $(dpkg-query -W -f='${Status}' "$package" 2>/dev/null | grep -c "ok installed") -eq 0 ];
+      then
+        nkr_echo "Installing $package"
+        sudo aptitude install -y "$package";
+    fi
 }
 
 nkr_snap() {
   local package="$1"
   local version="$2"
-
-  if [ $(snap info "$package" 2>/dev/null | grep -c "installed") -eq 0 ];
-  then
-    sudo snap install "$package" --channel="$version";
-  fi
+    if [ $(snap info "$package" 2>/dev/null | grep -c "installed") -eq 0 ];
+      then
+        nkr_echo "Installing $package"
+        sudo snap install "$package" --channel="$version";
+    fi
 }
 
 nkr_code() {
   local package="$1"
-
-  if [ $(code --list-extensions 2>/dev/null | grep -c "$package") -eq 0 ];
-  then
-    code --install-extension "$package";
-  fi
+    if [ $(code --list-extensions 2>/dev/null | grep -c "$package") -eq 0 ];
+      then
+        nkr_echo "Installing $package"
+        code --install-extension "$package";
+    fi
 }
 
 nkr_dpkg(){
   local package=$(dpkg-deb -f "$1" Package 2>/dev/null)
-  if [ $(dpkg-query -W -f='${Status}' "$package" 2>/dev/null | grep -c "ok installed") -eq 0 ];
-  then
-    sudo gdebi "$1" -n
-  fi
+    if [ $(dpkg-query -W -f='${Status}' "$package" 2>/dev/null | grep -c "ok installed") -eq 0 ];
+      then
+        nkr_echo "Installing $package"
+        sudo gdebi "$1" -n
+    fi
 }
-
 
 export_to_zshrc() {
   local text="$1" zshrc
@@ -98,34 +126,40 @@ nkr_install git
 
 #Installing sublime text
 wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -
-echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list
+nkr_sources sublime-text "deb https://download.sublimetext.com/ apt/stable/"
+
 # Google Cloud SDK
-echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
 curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+nkr_sources google-cloud-sdk "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main"
+
 # docker
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list
+nkr_sources docker-ce "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
 # google chrome (also for development)
 wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add - 
-sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+nkr_sources google-chrome-stable "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main"
+
 # Amazon Workspaces Client 
 wget -q -O - https://workspaces-client-linux-public-key.s3-us-west-2.amazonaws.com/ADB332E7.asc | sudo apt-key add -
-echo "deb [arch=amd64] https://d3nt0h4h6pmmc4.cloudfront.net/ubuntu bionic main" | sudo tee /etc/apt/sources.list.d/amazon-workspaces-clients.list 
+nkr_sources workspacesclient "deb [arch=amd64] https://d3nt0h4h6pmmc4.cloudfront.net/ubuntu bionic main"
+
 # Balena Etcher
-echo "deb https://deb.etcher.io stable etcher" | sudo tee /etc/apt/sources.list.d/balena-etcher.list
-sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 379CE192D401AB61
+# sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 379CE192D401AB61
+# nkr_sources balena-etcher-electron "deb https://deb.etcher.io stable etcher"
+
 # php
-sudo add-apt-repository ppa:ondrej/php -y
+nkr_ppa ondrej/php
 # python
-sudo add-apt-repository ppa:deadsnakes/ppa -y
+nkr_ppa deadsnakes/ppa
 # vlc
-sudo add-apt-repository ppa:videolan/master-daily -y
+nkr_ppa videolan/master-daily
 # Transmission
-sudo add-apt-repository ppa:transmissionbt/ppa -y
+nkr_ppa transmissionbt/ppa
 # Shutter
-sudo add-apt-repository ppa:linuxuprising/shutter -y
+nkr_ppa linuxuprising/shutter
 # TLP - saves battery when Ubuntu is installed on Laptops
-sudo add-apt-repository ppa:linrunner/tlp -y
+nkr_ppa linrunner/tlp
 
 sudo aptitude update
 
@@ -178,7 +212,7 @@ nkr_install ideviceinstaller
 nkr_install ifuse
 
 # balena etcher
-nkr_install balena-etcher-electron
+nkr_ppa_install balena-etcher-electron
 
 # compression
 nkr_install unace
@@ -260,7 +294,6 @@ nkr_install default-jdk
 
 # nkr_install openjdk-8-jdk 
 # nkr_snap intellij-idea-community
-
 nkr_install python3
 nkr_install python3.8
 nkr_install python3-pip
@@ -300,7 +333,9 @@ curl -sS https://getcomposer.org/installer -o composer-setup.php
 # php -r "if (hash_file('SHA384', 'composer-setup.php') === '$HASH') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
 sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 sudo rm composer-setup.php -f
-sudo chown -R $USER ~/.composer/
+if [[ -d "$HOME/.composer/" ]]; then
+  sudo chown -R $USER ~/.composer/
+fi
 export_to_zshrc 'export PATH="$HOME/.config/composer/vendor/bin:$PATH"'
 export PATH="$HOME/.config/composer/vendor/bin:$PATH"
 
@@ -315,7 +350,7 @@ composer global require laravel/installer
 
 # docker
 # apt-cache policy docker-ce
-nkr_install docker-ce
+nkr_ppa_install docker-ce
 # sudo systemctl status docker
 # Granting rights...
 sudo usermod -aG docker $(whoami)
@@ -341,16 +376,16 @@ nkr_install remmina
 nkr_install rclone
 
 # sublime text
-nkr_install sublime-text
+nkr_ppa_install sublime-text
 
 # install google chrome (also for development)
-nkr_install google-chrome-stable
+nkr_ppa_install google-chrome-stable
 
 # Google Cloud SDK
-nkr_install google-cloud-sdk
+nkr_ppa_install google-cloud-sdk
 
 # Amazon Workspaces Client 
-nkr_install workspacesclient
+nkr_ppa_install workspacesclient
 
 # vlc
 nkr_install vlc
@@ -479,7 +514,9 @@ nkr_code ms-ceintl.vscode-language-pack-es
 
 # zsh
 nkr_install zsh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+if [[ ! -d "$HOME/.oh-my-zsh/" ]]; then
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+fi
 #chsh -s $(which zsh)
 
 # valet
