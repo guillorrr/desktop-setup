@@ -10,7 +10,7 @@ nkr_sources() {
     if [ $(grep ^ /etc/apt/sources.list /etc/apt/sources.list.d/* 2>/dev/null | grep -c "$ppa") -eq 0 ];
       then
         nkr_echo "$ppa add successful"
-        echo "$source" | sudo tee -a /etc/apt/sources.list.d/"$name".list
+        echo "$source" | sudo tee -a /etc/apt/sources.list.d/"$ppa".list
     fi
 }
 
