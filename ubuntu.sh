@@ -47,7 +47,7 @@ nkr_snap() {
     if [ $(snap info "$package" 2>/dev/null | grep -c "installed") -eq 0 ];
       then
         nkr_echo "Installing $package"
-        sudo snap install "$package" --channel="$version";
+        sudo snap install "$package" --"$version";
     fi
 }
 
