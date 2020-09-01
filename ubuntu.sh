@@ -495,6 +495,9 @@ nkr_code shan.code-settings-sync
 nkr_code file-icons.file-icons
 nkr_code geeebe.duplicate
 
+# php
+nkr_code felixfbecker.php-pack
+
 # python
 nkr_code ms-python.python
 nkr_code donjayamanne.python-extension-pack
