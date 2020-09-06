@@ -153,6 +153,11 @@ nkr_sources google-chrome-stable "deb [arch=amd64] http://dl.google.com/linux/ch
 wget -q -O - https://workspaces-client-linux-public-key.s3-us-west-2.amazonaws.com/ADB332E7.asc | sudo apt-key add -
 nkr_sources workspacesclient "deb [arch=amd64] https://d3nt0h4h6pmmc4.cloudfront.net/ubuntu bionic main"
 
+# Beekeeper Studio
+wget --quiet -O - https://bintray.com/user/downloadSubjectPublicKey?username=bintray | sudo apt-key add -
+nkr_sources beekeeper-studio "deb https://dl.bintray.com/beekeeper-studio/releases disco main"
+
+
 # Balena Etcher
 # sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 379CE192D401AB61
 # nkr_sources balena-etcher-electron "deb https://deb.etcher.io stable etcher"
@@ -291,6 +296,7 @@ gsettings set org.gnome.desktop.wm.preferences button-layout ':minimize,maximize
 
 # development / ops
 nkr_install make
+nkr_install umake
 nkr_install cmake
 nkr_install g++
 nkr_install gcc
@@ -331,6 +337,7 @@ export PATH="$HOME/.local/bin:$PATH"
 # php
 nkr_install php7.4
 nkr_install php7.4-mysql
+nkr_install php7.4-sqlite
 nkr_install php7.4-curl
 nkr_install php7.4-json
 nkr_install php7.4-cgi
@@ -370,6 +377,16 @@ sudo usermod -aG docker $(whoami)
 sudo curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
 
+# database
+nkr_install mysql-server
+nkr_install mysql-client
+nkr_install phpmyadmin
+nkr_install postgresql
+nkr_install postgresql-contrib
+nkr_install phppgadmin
+nkr_install sqlite3
+nkr_install sqlitebrowser
+
 # virtualbox
 nkr_install virtualbox
 nkr_install vagrant
@@ -398,6 +415,9 @@ nkr_ppa_install google-cloud-sdk
 
 # Amazon Workspaces Client 
 nkr_ppa_install workspacesclient
+
+# Beekeeper Studio
+nkr_ppa_install beekeeper-studio
 
 # vlc
 nkr_install vlc
@@ -459,7 +479,6 @@ nkr_snap audacity
 nkr_snap minuet
 
 nkr_snap poedit
-nkr_snap geany-gtk edge
 nkr_snap gitkraken
 
 # Chat
@@ -485,10 +504,9 @@ nkr_snap pinta-james-carroll
 nkr_snap vidcutter
 nkr_snap beekeeper-studio
 
-#Arduino
+# IDE
 nkr_snap arduino
-
-# MS Visual Studio Code
+nkr_snap phpstorm classic
 nkr_snap code classic
 
 nkr_code shan.code-settings-sync
