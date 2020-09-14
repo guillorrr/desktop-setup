@@ -157,6 +157,9 @@ nkr_sources workspacesclient "deb [arch=amd64] https://d3nt0h4h6pmmc4.cloudfront
 wget --quiet -O - https://bintray.com/user/downloadSubjectPublicKey?username=bintray | sudo apt-key add -
 nkr_sources beekeeper-studio "deb https://dl.bintray.com/beekeeper-studio/releases disco main"
 
+# Microsoft Teams
+curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -       
+nkr_sources beekeeper-studio "deb [arch=amd64] https://packages.microsoft.com/repos/ms-teams stable main"
 
 # Balena Etcher
 # sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 379CE192D401AB61
@@ -418,6 +421,9 @@ nkr_ppa_install workspacesclient
 
 # Beekeeper Studio
 nkr_ppa_install beekeeper-studio
+
+# Microsoft Teams
+nkr_ppa_install teams
 
 # vlc
 nkr_install vlc
