@@ -161,6 +161,14 @@ nkr_sources beekeeper-studio "deb https://dl.bintray.com/beekeeper-studio/releas
 curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -       
 nkr_sources beekeeper-studio "deb [arch=amd64] https://packages.microsoft.com/repos/ms-teams stable main"
 
+# Spotify
+curl https://download.spotify.com/debian/pubkey.gpg | sudo apt-key add -   
+nkr_sources spotify-client "deb http://repository.spotify.com stable non-free"
+
+# code
+curl https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add - 
+nkr_sources code "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main"
+
 # Balena Etcher
 # sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 379CE192D401AB61
 # nkr_sources balena-etcher-electron "deb https://deb.etcher.io stable etcher"
@@ -177,6 +185,8 @@ nkr_ppa transmissionbt/ppa
 nkr_ppa linuxuprising/shutter
 # TLP - saves battery when Ubuntu is installed on Laptops
 nkr_ppa linrunner/tlp
+# audacity
+nkr_ppa ubuntuhandbook1/audacity
 
 sudo aptitude update
 
@@ -425,11 +435,20 @@ nkr_ppa_install beekeeper-studio
 # Microsoft Teams
 nkr_ppa_install teams
 
+# Spotify
+nkr_ppa_install spotify-client
+
+# VS Code
+nkr_ppa_install code
+
 # vlc
 nkr_install vlc
 nkr_install vlc-plugin-access-extra
 nkr_install libbluray-bdj
 nkr_install libdvdcss2
+
+# audacity
+nkr_install audacity
 
 # Transmission
 nkr_install transmission-gtk
@@ -464,6 +483,34 @@ nkr_dpkg teamviewer_amd64.deb
 wget https://github.com/torakiki/pdfsam/releases/download/v4.1.4/pdfsam_4.1.4-1_amd64.deb
 nkr_dpkg pdfsam_4.1.4-1_amd64.deb
 
+# gitkraken
+wget https://release.gitkraken.com/linux/gitkraken-amd64.deb
+nkr_dpkg gitkraken-amd64.deb
+
+# slack
+wget https://downloads.slack-edge.com/linux_releases/slack-desktop-4.10.3-amd64.deb
+nkr_dpkg slack-desktop-4.10.3-amd64.deb
+
+# discord
+wget https://dl.discordapp.net/apps/linux/0.0.12/discord-0.0.12.deb
+nkr_dpkg discord-0.0.12.deb
+
+# skype
+wget https://repo.skype.com/latest/skypeforlinux-64.deb
+nkr_dpkg skypeforlinux-64.deb
+
+# zoom
+wget https://zoom.us/client/latest/zoom_amd64.deb
+nkr_dpkg zoom_amd64.deb
+
+#  mysql-workbench
+wget https://dev.mysql.com/get/Downloads/MySQLGUITools/mysql-workbench-community_8.0.22-1ubuntu20.04_amd64.deb
+nkr_dpkg mysql-workbench-community_8.0.22-1ubuntu20.04_amd64.deb
+
+#  mysql-workbench
+wget https://dbeaver.io/files/dbeaver-ce_latest_amd64.deb
+nkr_dpkg dbeaver-ce_latest_amd64.deb
+
 # mega.nz
 wget https://mega.nz/linux/MEGAsync/xUbuntu_$(lsb_release -rs)/amd64/megasync-xUbuntu_$(lsb_release -rs)_amd64.deb -O megasync.deb
 wget https://mega.nz/linux/MEGAsync/xUbuntu_$(lsb_release -rs)/amd64/nautilus-megasync-xUbuntu_$(lsb_release -rs)_amd64.deb -O nautilus-megasync.deb
@@ -479,19 +526,20 @@ sudo chmod a+rx /usr/local/bin/youtube-dl
 # for snap
 cd ~
 
-# Music
-nkr_snap spotify classic
-nkr_snap audacity
+# Snap
+# nkr_snap spotify classic
+# nkr_snap audacity
+# nkr_snap gitkraken
+# nkr_snap slack classic
+# nkr_snap discord
+# nkr_snap skype classic
+# nkr_snap zoom-client
+# nkr_snap beekeeper-studio
+# nkr_snap code classic
+
+
 nkr_snap minuet
-
 nkr_snap poedit
-nkr_snap gitkraken
-
-# Chat
-nkr_snap slack classic
-nkr_snap discord
-nkr_snap skype classic
-nkr_snap zoom-client
 
 # 3D
 nkr_snap blender classic
@@ -508,16 +556,25 @@ nkr_snap inkscape
 nkr_snap vectr
 nkr_snap pinta-james-carroll
 nkr_snap vidcutter
-nkr_snap beekeeper-studio
 
 # IDE
 nkr_snap arduino
 nkr_snap phpstorm classic
-nkr_snap code classic
+nkr_snap datagrip classic
+
+# VS Code extensions
 
 nkr_code shan.code-settings-sync
 nkr_code file-icons.file-icons
 nkr_code geeebe.duplicate
+nkr_code ms-vscode.theme-1337
+nkr_code annsk.alignment
+nkr_code shakram02.bash-beautify
+nkr_code mikestead.dotenv
+nkr_code editorconfig.editorconfig
+
+# laravel 
+nkr_code onecentlin.laravel-extension-pack
 
 # php
 nkr_code felixfbecker.php-pack
