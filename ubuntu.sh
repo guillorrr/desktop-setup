@@ -162,11 +162,11 @@ curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
 nkr_sources beekeeper-studio "deb [arch=amd64] https://packages.microsoft.com/repos/ms-teams stable main"
 
 # Spotify
-curl https://download.spotify.com/debian/pubkey.gpg | sudo apt-key add -   
+curl -sS https://download.spotify.com/debian/pubkey_0D811D58.gpg | sudo apt-key add -
 nkr_sources spotify-client "deb http://repository.spotify.com stable non-free"
 
 # code
-curl https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add - 
+wget -q -O - https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add - 
 nkr_sources code "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main"
 
 # Balena Etcher
@@ -309,7 +309,7 @@ gsettings set org.gnome.desktop.wm.preferences button-layout ':minimize,maximize
 
 # development / ops
 nkr_install make
-nkr_install umake
+#nkr_install umake
 nkr_install cmake
 nkr_install g++
 nkr_install gcc
@@ -350,7 +350,7 @@ export PATH="$HOME/.local/bin:$PATH"
 # php
 nkr_install php7.4
 nkr_install php7.4-mysql
-nkr_install php7.4-sqlite
+nkr_install php7.4-sqlite3
 nkr_install php7.4-curl
 nkr_install php7.4-json
 nkr_install php7.4-cgi
