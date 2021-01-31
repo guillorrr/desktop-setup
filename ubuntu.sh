@@ -267,6 +267,7 @@ nkr_install aircrack-ng
 # tools
 nkr_install gprename
 nkr_install renrot
+nkr_install cpu-x
 
 # multimedia codecs
 nkr_install ubuntu-restricted-extras
@@ -356,7 +357,7 @@ nkr_install php7.4-json
 nkr_install php7.4-cgi
 nkr_install php7.4-xsl
 nkr_install php7.4-fpm
-nkr_install php-cli
+nkr_install php7.4-cli
 
 # composer
 curl -sS https://getcomposer.org/installer -o composer-setup.php
@@ -370,6 +371,10 @@ fi
 export_to_zshrc 'export PATH="$HOME/.config/composer/vendor/bin:$PATH"'
 export PATH="$HOME/.config/composer/vendor/bin:$PATH"
 
+#nodejs
+curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+nkr_install nodejs
+
 # laravel
 nkr_install php7.4-common
 nkr_install php7.4-bcmath
@@ -378,7 +383,7 @@ nkr_install php7.4-json
 nkr_install php7.4-mbstring
 nkr_install php7.4-zip
 # composer global require laravel/installer
-nkr_composer laravel/installer
+nkr_composer "laravel/installer:^4.0"
 
 # docker
 # apt-cache policy docker-ce
