@@ -269,6 +269,7 @@ nkr_install gprename
 nkr_install renrot
 nkr_install cpu-x
 nkr_install libimage-exiftool-perl
+nkr_install ffmpegthumbnailer
 
 # multimedia codecs
 nkr_install ubuntu-restricted-extras
