@@ -147,19 +147,19 @@ nkr_sources docker-ce "deb [arch=amd64] https://download.docker.com/linux/ubuntu
 
 # google chrome (also for development)
 wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add - 
-nkr_sources google-chrome-stable "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main"
+nkr_sources google-chrome "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main"
 
 # Amazon Workspaces Client 
 wget -q -O - https://workspaces-client-linux-public-key.s3-us-west-2.amazonaws.com/ADB332E7.asc | sudo apt-key add -
 nkr_sources workspacesclient "deb [arch=amd64] https://d3nt0h4h6pmmc4.cloudfront.net/ubuntu bionic main"
 
 # Beekeeper Studio
-wget --quiet -O - https://bintray.com/user/downloadSubjectPublicKey?username=bintray | sudo apt-key add -
-nkr_sources beekeeper-studio "deb https://dl.bintray.com/beekeeper-studio/releases disco main"
+wget --quiet -O - https://deb.beekeeperstudio.io/beekeeper.key | sudo apt-key add -
+nkr_sources beekeeper-studio-app "deb https://deb.beekeeperstudio.io stable main"
 
 # Microsoft Teams
 curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -       
-nkr_sources beekeeper-studio "deb [arch=amd64] https://packages.microsoft.com/repos/ms-teams stable main"
+nkr_sources teams "deb [arch=amd64] https://packages.microsoft.com/repos/ms-teams stable main"
 
 # Spotify
 curl -sS https://download.spotify.com/debian/pubkey_0D811D58.gpg | sudo apt-key add -
@@ -187,6 +187,12 @@ nkr_ppa linuxuprising/shutter
 nkr_ppa linrunner/tlp
 # audacity
 nkr_ppa ubuntuhandbook1/audacity
+# inkscape
+nkr_ppa inkscape.dev/stable
+# openscad
+nkr_ppa openscad/releases
+# vidcutter
+nkr_ppa ozmartian/apps
 
 sudo aptitude update
 
@@ -467,6 +473,18 @@ nkr_install wine-stable
 # Shutter
 nkr_install shutter
 
+# inkscape
+nkr_install inkscape
+
+# openscad
+nkr_install openscad
+
+# freecad
+nkr_install freecad
+
+# vidcutter
+nkr_install vidcutter
+
 # Telegram
 nkr_install telegram-desktop
 # nkr_install telegram-cli telegram-purple
@@ -530,6 +548,75 @@ sudo apt -f install
 sudo curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
 sudo chmod a+rx /usr/local/bin/youtube-dl
 
+# blender
+wget https://www.blender.org/download/Blender2.92/blender-2.92.0-linux64.tar.xz
+sudo tar -xvf blender-2.92.0-linux64.tar.xz -C /opt
+sudo mv /opt/blender-2.92.0-linux64 /opt/blender
+sudo ln -s /opt/blender/blender /usr/bin/
+touch ~/.local/share/applications/blender.desktop
+echo '[Desktop Entry]\nName=Blender\nExec=blender\nComment=\nTerminal=false\nIcon=/opt/blender/blender.svg\nType=Application' >> ~/.local/share/applications/blender.desktop
+
+# datagrip
+wget https://download.jetbrains.com/datagrip/datagrip-2020.3.2.tar.gz
+sudo tar -xf datagrip-2020.3.2.tar.gz -C /opt
+sudo mv /opt/DataGrip-* /opt/datagrip
+sudo sh /opt/datagrip/bin/datagrip.sh
+
+# phpstorm
+wget https://download.jetbrains.com/webide/PhpStorm-2021.1.1.tar.gz
+sudo tar -xf PhpStorm-2021.1.1.tar.gz -C /opt
+sudo mv /opt/PhpStorm-* /opt/phpstorm
+sudo sh /opt/phpstorm/bin/phpstorm.sh
+
+# gimp
+wget https://download.gimp.org/mirror/pub/gimp/v2.10/gimp-2.10.22.tar.bz2
+sudo tar -xjf gimp-2.10.22.tar.bz2 -C /opt
+sudo mv /opt/gimp-2.10.22 /opt/gimp
+sudo sh ./opt/gimp/bin/gimp.sh
+nkr_install gimp-cbmplugs
+nkr_install gimp-dcraw
+nkr_install gimp-dds
+nkr_install gimp-gap
+nkr_install gimp-gluas
+nkr_install gimp-gmic
+nkr_install gimp-gutenprint
+nkr_install gimp-normalmap
+nkr_install gimp-texturize
+
+# prusa slicer
+wget https://cdn.prusa3d.com/downloads/drivers/prusa3d_linux_2_3_1.zip
+wget https://raw.githubusercontent.com/prusa3d/PrusaSlicer/master/resources/icons/PrusaSlicer_128px.png
+sudo unzip prusa3d_linux_2_3_1.zip -d /opt/prusaslicer
+sudo mv /opt/prusaslicer/PrusaSlicer-2.3.1+linux-x64-202104161339.AppImage /opt/prusaslicer/PrusaSlicer.AppImage
+sudo mv /tmp/PrusaSlicer_128px.png /opt/prusaslicer/PrusaSlicer.png
+sudo rm /opt/prusaslicer/sampleobjects-info.txt
+sudo chmod a+rx /opt/prusaslicer/PrusaSlicer.AppImage
+sudo chmod a+rx /opt/prusaslicer/PrusaSlicer.png
+touch ~/.local/share/applications/prusaslicer.desktop
+echo '[Desktop Entry]\nName=PrusaSlicer\nExec=/opt/prusaslicer/PrusaSlicer.AppImage\nComment=\nTerminal=false\nIcon=/opt/prusaslicer/PrusaSlicer.png\nType=Application' >> ~/.local/share/applications/prusaslicer.desktop
+
+# cura slicer
+wget https://storage.googleapis.com/software.ultimaker.com/cura/Ultimaker_Cura-4.9.0.AppImage
+wget https://raw.githubusercontent.com/Ultimaker/Cura/master/icons/cura-128.png
+sudo mkdir /opt/cura
+sudo mv Ultimaker_Cura-4.9.0.AppImage /opt/cura/Ultimaker_Cura.AppImage
+sudo mv /tmp/cura-128.png /opt/cura/Ultimaker_Cura.png
+sudo chmod a+rx /opt/cura/Ultimaker_Cura.AppImage
+sudo chmod a+rx /opt/cura/Ultimaker_Cura.png
+touch ~/.local/share/applications/cura.desktop
+echo '[Desktop Entry]\nName=Ultimaker Cura\nExec=/opt/cura/Ultimaker_Cura.AppImage\nComment=\nTerminal=false\nIcon=/opt/cura/Ultimaker_Cura.png\nType=Application' >> ~/.local/share/applications/cura.desktop
+
+# meshlab slicer
+wget https://github.com/cnr-isti-vclab/meshlab/releases/download/Meshlab-2020.12/MeshLab2020.12-linux.AppImage
+wget https://www.meshlab.net/img/meshlabjsLogo.png
+sudo mkdir /opt/meshlab
+sudo mv MeshLab2020.12-linux.AppImage /opt/meshlab/MeshLab.AppImage
+sudo mv /tmp/meshlabjsLogo.png /opt/meshlab/MeshLab.png
+sudo chmod a+rx /opt/meshlab/MeshLab.AppImage
+sudo chmod a+rx /opt/meshlab/MeshLab.png
+touch ~/.local/share/applications/meshlab.desktop
+echo '[Desktop Entry]\nName=MeshLab\nExec=/opt/meshlab/MeshLab.AppImage\nComment=\nTerminal=false\nIcon=/opt/meshlab/MeshLab.png\nType=Application' >> ~/.local/share/applications/meshlab.desktop
+
 # for snap
 cd ~
 
@@ -543,31 +630,28 @@ cd ~
 # nkr_snap zoom-client
 # nkr_snap beekeeper-studio
 # nkr_snap code classic
-
+# nkr_snap gimp
+# nkr_snap inkscape
+# nkr_snap datagrip classic
+# nkr_snap phpstorm classic
+# nkr_snap blender classic
+# nkr_snap openscad
+# nkr_snap freecad
+# nkr_snap prusa-slicer
+# nkr_snap cura-slicer edge
+# nkr_snap meshlab
+# nkr_snap vidcutter
 
 nkr_snap minuet
 nkr_snap poedit
 
-# 3D
-nkr_snap blender classic
-nkr_snap freecad
-nkr_snap meshlab
-nkr_snap openscad
-nkr_snap prusa-slicer
-nkr_snap cura-slicer edge
-
 # Grapics
-nkr_snap gimp
 nkr_snap photogimp
-nkr_snap inkscape
 nkr_snap vectr
 nkr_snap pinta-james-carroll
-nkr_snap vidcutter
 
 # IDE
 nkr_snap arduino
-nkr_snap phpstorm classic
-nkr_snap datagrip classic
 
 # VS Code extensions
 
