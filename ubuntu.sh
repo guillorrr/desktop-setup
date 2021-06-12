@@ -193,6 +193,8 @@ nkr_ppa inkscape.dev/stable
 nkr_ppa openscad/releases
 # vidcutter
 nkr_ppa ozmartian/apps
+# obs-studio
+nkr_ppa obsproject/obs-studio
 
 sudo aptitude update
 
@@ -485,6 +487,14 @@ nkr_install vlc
 nkr_install vlc-plugin-access-extra
 nkr_install libbluray-bdj
 nkr_install libdvdcss2
+
+# video recorder
+nkr_install simplescreenrecorder
+nkr_install kazam
+nkr_install obs-studio
+
+# extundelete
+nkr_install extundelete
 
 # audacity
 nkr_install audacity
