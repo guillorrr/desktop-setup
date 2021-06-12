@@ -357,15 +357,47 @@ export PATH="$HOME/.local/bin:$PATH"
 # pip3 install pipenv --user
 
 # php
-nkr_install php7.4
-nkr_install php7.4-mysql
-nkr_install php7.4-sqlite3
-nkr_install php7.4-curl
-nkr_install php7.4-json
-nkr_install php7.4-cgi
-nkr_install php7.4-xsl
-nkr_install php7.4-fpm
-nkr_install php7.4-cli
+nkr_install php
+nkr_install php-mysql
+nkr_install php-sqlite3
+nkr_install php-curl
+nkr_install php-json
+nkr_install php-cgi
+nkr_install php-fpm
+nkr_install php-cli
+nkr_install php-pear
+nkr_install php-gd
+nkr_install php-imagick
+nkr_install php-dev
+nkr_install php-intl
+nkr_install php-common 
+nkr_install php-mbstring 
+nkr_install php-xml 
+nkr_install php-xmlrpc
+nkr_install php-zip
+nkr_install php-bcmath
+nkr_install openssl
+
+nkr_install php8.0
+nkr_install php8.0-mysql
+nkr_install php8.0-sqlite3
+nkr_install php8.0-curl
+nkr_install php8.0-json
+nkr_install php8.0-cgi
+nkr_install php8.0-xsl
+nkr_install php8.0-fpm
+nkr_install php8.0-cli
+nkr_install php8.0-gd
+nkr_install php8.0-imagick
+nkr_install php8.0-dev
+nkr_install php8.0-intl
+nkr_install php8.0-common
+nkr_install php8.0-mbstring 
+nkr_install php8.0-xml
+nkr_install php8.0-xmlrpc 
+nkr_install php8.0-zip
+nkr_install php8.0-bcmath
+# nkr_install php8.0-opcache 
 
 # composer
 curl -sS https://getcomposer.org/installer -o composer-setup.php
@@ -384,12 +416,6 @@ curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 nkr_install nodejs
 
 # laravel
-nkr_install php7.4-common
-nkr_install php7.4-bcmath
-nkr_install openssl
-nkr_install php7.4-json
-nkr_install php7.4-mbstring
-nkr_install php7.4-zip
 # composer global require laravel/installer
 nkr_composer "laravel/installer:^4.0"
 
@@ -476,6 +502,9 @@ nkr_install shutter
 # inkscape
 nkr_install inkscape
 
+# pinta
+nkr_install pinta
+
 # openscad
 nkr_install openscad
 
@@ -494,6 +523,11 @@ nkr_install gdebi
 
 # download files
 cd /tmp
+
+# wp-cli
+curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+chmod +x wp-cli.phar
+sudo mv wp-cli.phar /usr/local/bin/wp
 
 # dropbox
 wget https://www.dropbox.com/download?dl=packages/ubuntu/dropbox_2020.03.04_amd64.deb -O dropbox_2020.03.04_amd64.deb
@@ -617,6 +651,39 @@ sudo chmod a+rx /opt/meshlab/MeshLab.png
 touch ~/.local/share/applications/meshlab.desktop
 echo '[Desktop Entry]\nName=MeshLab\nExec=/opt/meshlab/MeshLab.AppImage\nComment=\nTerminal=false\nIcon=/opt/meshlab/MeshLab.png\nType=Application' >> ~/.local/share/applications/meshlab.desktop
 
+# tinyMediaManager
+wget https://release.tinymediamanager.org/v4/dist/tmm_4.1.4_linux.tar.gz
+sudo tar -xf tmm_4.1.4_linux.tar.gz -C /opt
+sudo chown guillo:guillo -R /opt/tinyMediaManager
+sudo chmod a+rx /opt/tinyMediaManager
+sudo ln -s /opt/tinyMediaManager/tinyMediaManager /usr/bin/
+touch ~/.local/share/applications/tinyMediaManager.desktop
+echo '[Desktop Entry]\nName=tinyMediaManager\nExec=tinyMediaManager\nComment=\nTerminal=false\nIcon=/opt/tinyMediaManager/tmm.png\nType=Application' >> ~/.local/share/applications/tinyMediaManager.desktop
+
+# poedit
+wget https://github.com/vslavik/poedit/releases/download/v2.4.2-oss/poedit-2.4.2.tar.gz
+sudo tar -xf poedit-2.4.2.tar.gz -C /opt
+sudo mv /opt/poedit-2.4.2 /opt/poedit
+sudo chown guillo:guillo -R /opt/poedit
+sudo chmod a+rx /opt/poedit
+cd /opt/poedit
+nkr_install libicu-dev
+nkr_install libgtkspell-dev
+nkr_install libdb++-dev
+nkr_install liblucene++-dev
+nkr_install libboost-dev
+nkr_install libboost-regex-dev
+nkr_install libboost-system-dev
+nkr_install libwxgtk3.0-gtk3-dev
+nkr_install libcld2-0
+nkr_install libgtkspell3-3-dev
+./configure
+make
+make install
+
+# download files
+cd /tmp
+
 # for snap
 cd ~
 
@@ -641,14 +708,13 @@ cd ~
 # nkr_snap cura-slicer edge
 # nkr_snap meshlab
 # nkr_snap vidcutter
-
-nkr_snap minuet
-nkr_snap poedit
+# nkr_snap poedit
+# nkr_snap minuet
 
 # Grapics
-nkr_snap photogimp
-nkr_snap vectr
-nkr_snap pinta-james-carroll
+# nkr_snap photogimp
+# nkr_snap vectr
+# nkr_snap pinta-james-carroll
 
 # IDE
 nkr_snap arduino
