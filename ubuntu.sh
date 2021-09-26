@@ -172,6 +172,8 @@ nkr_sources code "deb [arch=amd64] https://packages.microsoft.com/repos/vscode s
 # Balena Etcher
 # sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 379CE192D401AB61
 # nkr_sources balena-etcher-electron "deb https://deb.etcher.io stable etcher"
+curl -1sLf 'https://dl.cloudsmith.io/public/balena/etcher/setup.deb.sh' | sudo -E bash
+
 
 # php
 nkr_ppa ondrej/php
@@ -195,6 +197,8 @@ nkr_ppa openscad/releases
 nkr_ppa ozmartian/apps
 # obs-studio
 nkr_ppa obsproject/obs-studio
+# gimp
+nkr_ppa ubuntuhandbook1/gimp
 
 sudo aptitude update
 
@@ -593,30 +597,31 @@ sudo curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/you
 sudo chmod a+rx /usr/local/bin/youtube-dl
 
 # blender
-wget https://www.blender.org/download/Blender2.92/blender-2.92.0-linux64.tar.xz
-sudo tar -xvf blender-2.92.0-linux64.tar.xz -C /opt
-sudo mv /opt/blender-2.92.0-linux64 /opt/blender
+wget https://download.blender.org/release/Blender2.93/blender-2.93.4-linux-x64.tar.xz
+sudo tar -xvf blender-2.93.4-linux-x64.tar.xz -C /opt
+sudo mv /opt/blender-2.93.4-linux-x64 /opt/blender
 sudo ln -s /opt/blender/blender /usr/bin/
 touch ~/.local/share/applications/blender.desktop
 echo '[Desktop Entry]\nName=Blender\nExec=blender\nComment=\nTerminal=false\nIcon=/opt/blender/blender.svg\nType=Application' >> ~/.local/share/applications/blender.desktop
 
 # datagrip
-wget https://download.jetbrains.com/datagrip/datagrip-2020.3.2.tar.gz
-sudo tar -xf datagrip-2020.3.2.tar.gz -C /opt
+wget https://download.jetbrains.com/datagrip/datagrip-2021.2.2.tar.gz
+sudo tar -xf datagrip-2021.2.2.tar.gz -C /opt
 sudo mv /opt/DataGrip-* /opt/datagrip
 sudo sh /opt/datagrip/bin/datagrip.sh
 
 # phpstorm
-wget https://download.jetbrains.com/webide/PhpStorm-2021.1.1.tar.gz
-sudo tar -xf PhpStorm-2021.1.1.tar.gz -C /opt
+wget https://download.jetbrains.com/webide/PhpStorm-2021.2.2.tar.gz
+sudo tar -xf PhpStorm-2021.2.2.tar.gz -C /opt
 sudo mv /opt/PhpStorm-* /opt/phpstorm
 sudo sh /opt/phpstorm/bin/phpstorm.sh
 
 # gimp
-wget https://download.gimp.org/mirror/pub/gimp/v2.10/gimp-2.10.22.tar.bz2
-sudo tar -xjf gimp-2.10.22.tar.bz2 -C /opt
-sudo mv /opt/gimp-2.10.22 /opt/gimp
-sudo sh ./opt/gimp/bin/gimp.sh
+# wget https://download.gimp.org/mirror/pub/gimp/v2.10/gimp-2.10.22.tar.bz2
+# sudo tar -xjf gimp-2.10.22.tar.bz2 -C /opt
+# sudo mv /opt/gimp-2.10.22 /opt/gimp
+# sudo sh ./opt/gimp/bin/gimp.sh
+nkr_install gimp
 nkr_install gimp-cbmplugs
 nkr_install gimp-dcraw
 nkr_install gimp-dds
@@ -626,6 +631,9 @@ nkr_install gimp-gmic
 nkr_install gimp-gutenprint
 nkr_install gimp-normalmap
 nkr_install gimp-texturize
+nkr_install gphoto2
+nkr_install graphicsmagick-db
+nkr_install gthumb
 
 # prusa slicer
 wget https://cdn.prusa3d.com/downloads/drivers/prusa3d_linux_2_3_1.zip
@@ -662,8 +670,8 @@ touch ~/.local/share/applications/meshlab.desktop
 echo '[Desktop Entry]\nName=MeshLab\nExec=/opt/meshlab/MeshLab.AppImage\nComment=\nTerminal=false\nIcon=/opt/meshlab/MeshLab.png\nType=Application' >> ~/.local/share/applications/meshlab.desktop
 
 # tinyMediaManager
-wget https://release.tinymediamanager.org/v4/dist/tmm_4.1.4_linux.tar.gz
-sudo tar -xf tmm_4.1.4_linux.tar.gz -C /opt
+wget https://release.tinymediamanager.org/v4/dist/tmm_4.2.2_linux-amd64.tar.gz
+sudo tar -xf tmm_4.2.2_linux-amd64.tar.gz -C /opt
 sudo chown guillo:guillo -R /opt/tinyMediaManager
 sudo chmod a+rx /opt/tinyMediaManager
 sudo ln -s /opt/tinyMediaManager/tinyMediaManager /usr/bin/
