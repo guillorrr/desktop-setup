@@ -133,47 +133,35 @@ nkr_install gnupg-agent
 # git
 nkr_install git
 
+sudo install -m 0755 -d /etc/apt/keyrings
+
 #Installing sublime text
-wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -
+wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/sublimehq-archive.gpg > /dev/null
 nkr_sources sublime-text "deb https://download.sublimetext.com/ apt/stable/"
 
 # Google Cloud SDK
-curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
-nkr_sources google-cloud-sdk "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main"
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg
+nkr_sources google-cloud-sdk "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main"
 
 # docker
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 nkr_sources docker-ce "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 
 # google chrome (also for development)
 wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add - 
 nkr_sources google-chrome "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main"
 
-# Amazon Workspaces Client 
-wget -q -O - https://workspaces-client-linux-public-key.s3-us-west-2.amazonaws.com/ADB332E7.asc | sudo apt-key add -
-nkr_sources workspacesclient "deb [arch=amd64] https://d3nt0h4h6pmmc4.cloudfront.net/ubuntu bionic main"
-
-# Beekeeper Studio
-wget --quiet -O - https://deb.beekeeperstudio.io/beekeeper.key | sudo apt-key add -
-nkr_sources beekeeper-studio-app "deb https://deb.beekeeperstudio.io stable main"
-
 # Microsoft Teams
 curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -       
 nkr_sources teams "deb [arch=amd64] https://packages.microsoft.com/repos/ms-teams stable main"
 
 # Spotify
-curl -sS https://download.spotify.com/debian/pubkey_0D811D58.gpg | sudo apt-key add -
+curl -sS https://download.spotify.com/debian/pubkey_7A3A762FAFD4A51F.gpg | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/spotify.gpg
 nkr_sources spotify-client "deb http://repository.spotify.com stable non-free"
 
 # code
-wget -q -O - https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add - 
-nkr_sources code "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main"
-
-# Balena Etcher
-# sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 379CE192D401AB61
-# nkr_sources balena-etcher-electron "deb https://deb.etcher.io stable etcher"
-curl -1sLf 'https://dl.cloudsmith.io/public/balena/etcher/setup.deb.sh' | sudo -E bash
-
+wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+nkr_sources code "deb [arch=amd64] https://packages.microsoft.com/repos/code stable main"
 
 # php
 nkr_ppa ondrej/php
@@ -340,12 +328,13 @@ nkr_install default-jdk
 # nkr_install openjdk-8-jdk 
 # nkr_snap intellij-idea-community
 nkr_install python3
-nkr_install python3.8
+nkr_install python3.12
 nkr_install python3-pip
 nkr_install python3-virtualenv
 nkr_install pyflakes
 nkr_install pylint
 nkr_install pipenv
+nkr_install python3-gpg
 pip3 install --upgrade pip
 # pip install --user virtualenv
 # pip install --user virtualenvwrapper
@@ -384,26 +373,26 @@ nkr_install php-zip
 nkr_install php-bcmath
 nkr_install openssl
 
-nkr_install php8.0
-nkr_install php8.0-mysql
-nkr_install php8.0-sqlite3
-nkr_install php8.0-curl
-nkr_install php8.0-json
-nkr_install php8.0-cgi
-nkr_install php8.0-xsl
-nkr_install php8.0-fpm
-nkr_install php8.0-cli
-nkr_install php8.0-gd
-nkr_install php8.0-imagick
-nkr_install php8.0-dev
-nkr_install php8.0-intl
-nkr_install php8.0-common
-nkr_install php8.0-mbstring 
-nkr_install php8.0-xml
-nkr_install php8.0-xmlrpc 
-nkr_install php8.0-zip
-nkr_install php8.0-bcmath
-# nkr_install php8.0-opcache 
+nkr_install php8.2
+nkr_install php8.2-mysql
+nkr_install php8.2-sqlite3
+nkr_install php8.2-curl
+nkr_install php8.2-json
+nkr_install php8.2-cgi
+nkr_install php8.2-xsl
+nkr_install php8.2-fpm
+nkr_install php8.2-cli
+nkr_install php8.2-gd
+nkr_install php8.2-imagick
+nkr_install php8.2-dev
+nkr_install php8.2-intl
+nkr_install php8.2-common
+nkr_install php8.2-mbstring 
+nkr_install php8.2-xml
+nkr_install php8.2-xmlrpc 
+nkr_install php8.2-zip
+nkr_install php8.2-bcmath
+# nkr_install php8.2-opcache 
 
 # composer
 curl -sS https://getcomposer.org/installer -o composer-setup.php
@@ -418,22 +407,15 @@ export_to_zshrc 'export PATH="$HOME/.config/composer/vendor/bin:$PATH"'
 export PATH="$HOME/.config/composer/vendor/bin:$PATH"
 
 #nodejs
-curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 nkr_install nodejs
-
-# laravel
-# composer global require laravel/installer
-nkr_composer "laravel/installer:^4.0"
 
 # docker
 # apt-cache policy docker-ce
-nkr_ppa_install docker-ce
+nkr_ppa_install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 # sudo systemctl status docker
 # Granting rights...
 sudo usermod -aG docker $(whoami)
-# Docker Compose installation started...
-sudo curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
 
 # database
 nkr_install mysql-server
@@ -470,12 +452,6 @@ nkr_ppa_install google-chrome-stable
 
 # Google Cloud SDK
 nkr_ppa_install google-cloud-sdk
-
-# Amazon Workspaces Client 
-nkr_ppa_install workspacesclient
-
-# Beekeeper Studio
-nkr_ppa_install beekeeper-studio
 
 # Microsoft Teams
 nkr_ppa_install teams
@@ -544,45 +520,36 @@ chmod +x wp-cli.phar
 sudo mv wp-cli.phar /usr/local/bin/wp
 
 # dropbox
-wget https://www.dropbox.com/download?dl=packages/ubuntu/dropbox_2020.03.04_amd64.deb -O dropbox_2020.03.04_amd64.deb
-nkr_install python3-gpg
-nkr_dpkg dropbox_2020.03.04_amd64.deb
+wget https://www.dropbox.com/download?dl=packages/ubuntu/dropbox_2023.09.06_amd64.deb -O dropbox_2023.09.06_amd64.deb
+nkr_dpkg dropbox_2023.09.06_amd64.deb
 
 # teamviewer
 wget https://download.teamviewer.com/download/linux/teamviewer_amd64.deb
 nkr_dpkg teamviewer_amd64.deb
 
 # pdfsam
-wget https://github.com/torakiki/pdfsam/releases/download/v4.1.4/pdfsam_4.1.4-1_amd64.deb
-nkr_dpkg pdfsam_4.1.4-1_amd64.deb
-
-# gitkraken
-wget https://release.gitkraken.com/linux/gitkraken-amd64.deb
-nkr_dpkg gitkraken-amd64.deb
+wget https://github.com/torakiki/pdfsam/releases/download/v5.2.0/pdfsam_5.2.0-1_amd64.deb
+nkr_dpkg pdfsam_5.2.0-1_amd64.deb
 
 # slack
-wget https://downloads.slack-edge.com/linux_releases/slack-desktop-4.10.3-amd64.deb
-nkr_dpkg slack-desktop-4.10.3-amd64.deb
+wget https://downloads.slack-edge.com/releases/linux/4.35.131/prod/x64/slack-desktop-4.35.131-amd64.deb
+nkr_dpkg slack-desktop-4.35.131-amd64.deb
 
 # discord
-wget https://dl.discordapp.net/apps/linux/0.0.12/discord-0.0.12.deb
-nkr_dpkg discord-0.0.12.deb
+wget https://dl.discordapp.net/apps/linux/0.0.38/discord-0.0.38.deb
+nkr_dpkg discord-0.0.38.deb
 
 # skype
 wget https://repo.skype.com/latest/skypeforlinux-64.deb
 nkr_dpkg skypeforlinux-64.deb
 
 # zoom
-wget https://zoom.us/client/latest/zoom_amd64.deb
+wget https://zoom.us/client/5.17.0.1682/zoom_amd64.deb
 nkr_dpkg zoom_amd64.deb
 
 #  mysql-workbench
-wget https://dev.mysql.com/get/Downloads/MySQLGUITools/mysql-workbench-community_8.0.22-1ubuntu20.04_amd64.deb
-nkr_dpkg mysql-workbench-community_8.0.22-1ubuntu20.04_amd64.deb
-
-#  mysql-workbench
-wget https://dbeaver.io/files/dbeaver-ce_latest_amd64.deb
-nkr_dpkg dbeaver-ce_latest_amd64.deb
+wget https://cdn.mysql.com/archives/mysql-workbench/mysql-workbench-community_8.0.29-1ubuntu20.04_amd64.deb
+nkr_dpkg mysql-workbench-community_8.0.29-1ubuntu20.04_amd64.deb
 
 # mega.nz
 wget https://mega.nz/linux/MEGAsync/xUbuntu_$(lsb_release -rs)/amd64/megasync-xUbuntu_$(lsb_release -rs)_amd64.deb -O megasync.deb
@@ -597,22 +564,22 @@ sudo curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/you
 sudo chmod a+rx /usr/local/bin/youtube-dl
 
 # blender
-wget https://download.blender.org/release/Blender2.93/blender-2.93.4-linux-x64.tar.xz
-sudo tar -xvf blender-2.93.4-linux-x64.tar.xz -C /opt
-sudo mv /opt/blender-2.93.4-linux-x64 /opt/blender
+wget https://www.blender.org/download/release/Blender4.0/blender-4.0.2-linux-x64.tar.xz
+sudo tar -xvf blender-4.0.2-linux-x64.tar.xz -C /opt
+sudo mv /opt/blender-4.0.2-linux-x64 /opt/blender
 sudo ln -s /opt/blender/blender /usr/bin/
 touch ~/.local/share/applications/blender.desktop
 echo '[Desktop Entry]\nName=Blender\nExec=blender\nComment=\nTerminal=false\nIcon=/opt/blender/blender.svg\nType=Application' >> ~/.local/share/applications/blender.desktop
 
 # datagrip
-wget https://download.jetbrains.com/datagrip/datagrip-2021.2.2.tar.gz
-sudo tar -xf datagrip-2021.2.2.tar.gz -C /opt
+wget https://download.jetbrains.com/datagrip/datagrip-2023.3.2.tar.gz
+sudo tar -xf datagrip-2023.3.2.tar.gz -C /opt
 sudo mv /opt/DataGrip-* /opt/datagrip
 sudo sh /opt/datagrip/bin/datagrip.sh
 
 # phpstorm
-wget https://download.jetbrains.com/webide/PhpStorm-2021.2.2.tar.gz
-sudo tar -xf PhpStorm-2021.2.2.tar.gz -C /opt
+wget https://download.jetbrains.com/webide/PhpStorm-2023.3.1.tar.gz
+sudo tar -xf PhpStorm-2023.3.1.tar.gz -C /opt
 sudo mv /opt/PhpStorm-* /opt/phpstorm
 sudo sh /opt/phpstorm/bin/phpstorm.sh
 
@@ -636,10 +603,10 @@ nkr_install graphicsmagick-db
 nkr_install gthumb
 
 # prusa slicer
-wget https://cdn.prusa3d.com/downloads/drivers/prusa3d_linux_2_3_1.zip
+wget https://cdn.prusa3d.com/downloads/drivers/prusa3d_linux_2_7_1.zip
 wget https://raw.githubusercontent.com/prusa3d/PrusaSlicer/master/resources/icons/PrusaSlicer_128px.png
-sudo unzip prusa3d_linux_2_3_1.zip -d /opt/prusaslicer
-sudo mv /opt/prusaslicer/PrusaSlicer-2.3.1+linux-x64-202104161339.AppImage /opt/prusaslicer/PrusaSlicer.AppImage
+sudo unzip prusa3d_linux_2_7_1.zip -d /opt/prusaslicer
+sudo mv /opt/prusaslicer/PrusaSlicer-2.7.1+linux-x64-202104161339.AppImage /opt/prusaslicer/PrusaSlicer.AppImage
 sudo mv /tmp/PrusaSlicer_128px.png /opt/prusaslicer/PrusaSlicer.png
 sudo rm /opt/prusaslicer/sampleobjects-info.txt
 sudo chmod a+rx /opt/prusaslicer/PrusaSlicer.AppImage
@@ -648,10 +615,10 @@ touch ~/.local/share/applications/prusaslicer.desktop
 echo '[Desktop Entry]\nName=PrusaSlicer\nExec=/opt/prusaslicer/PrusaSlicer.AppImage\nComment=\nTerminal=false\nIcon=/opt/prusaslicer/PrusaSlicer.png\nType=Application' >> ~/.local/share/applications/prusaslicer.desktop
 
 # cura slicer
-wget https://storage.googleapis.com/software.ultimaker.com/cura/Ultimaker_Cura-4.9.0.AppImage
+wget https://github.com/Ultimaker/Cura/releases/download/5.6.0/UltiMaker-Cura-5.6.0-linux-X64.AppImage
 wget https://raw.githubusercontent.com/Ultimaker/Cura/master/icons/cura-128.png
 sudo mkdir /opt/cura
-sudo mv Ultimaker_Cura-4.9.0.AppImage /opt/cura/Ultimaker_Cura.AppImage
+sudo mv UltiMaker-Cura-5.6.0-linux-X64.AppImage /opt/cura/Ultimaker_Cura.AppImage
 sudo mv /tmp/cura-128.png /opt/cura/Ultimaker_Cura.png
 sudo chmod a+rx /opt/cura/Ultimaker_Cura.AppImage
 sudo chmod a+rx /opt/cura/Ultimaker_Cura.png
@@ -659,10 +626,10 @@ touch ~/.local/share/applications/cura.desktop
 echo '[Desktop Entry]\nName=Ultimaker Cura\nExec=/opt/cura/Ultimaker_Cura.AppImage\nComment=\nTerminal=false\nIcon=/opt/cura/Ultimaker_Cura.png\nType=Application' >> ~/.local/share/applications/cura.desktop
 
 # meshlab slicer
-wget https://github.com/cnr-isti-vclab/meshlab/releases/download/Meshlab-2020.12/MeshLab2020.12-linux.AppImage
+wget https://github.com/cnr-isti-vclab/meshlab/releases/download/MeshLab-2023.12/MeshLab2023.12-linux.AppImage
 wget https://www.meshlab.net/img/meshlabjsLogo.png
 sudo mkdir /opt/meshlab
-sudo mv MeshLab2020.12-linux.AppImage /opt/meshlab/MeshLab.AppImage
+sudo mv MeshLab2023.12-linux.AppImage /opt/meshlab/MeshLab.AppImage
 sudo mv /tmp/meshlabjsLogo.png /opt/meshlab/MeshLab.png
 sudo chmod a+rx /opt/meshlab/MeshLab.AppImage
 sudo chmod a+rx /opt/meshlab/MeshLab.png
@@ -670,8 +637,8 @@ touch ~/.local/share/applications/meshlab.desktop
 echo '[Desktop Entry]\nName=MeshLab\nExec=/opt/meshlab/MeshLab.AppImage\nComment=\nTerminal=false\nIcon=/opt/meshlab/MeshLab.png\nType=Application' >> ~/.local/share/applications/meshlab.desktop
 
 # tinyMediaManager
-wget https://release.tinymediamanager.org/v4/dist/tmm_4.2.2_linux-amd64.tar.gz
-sudo tar -xf tmm_4.2.2_linux-amd64.tar.gz -C /opt
+wget https://release.tinymediamanager.org/v4/dist/tmm_4.3.14_linux-amd64.tar.gz
+sudo tar -xf tmm_4.3.14_linux-amd64.tar.gz -C /opt
 sudo chown guillo:guillo -R /opt/tinyMediaManager
 sudo chmod a+rx /opt/tinyMediaManager
 sudo ln -s /opt/tinyMediaManager/tinyMediaManager /usr/bin/
@@ -679,9 +646,9 @@ touch ~/.local/share/applications/tinyMediaManager.desktop
 echo '[Desktop Entry]\nName=tinyMediaManager\nExec=tinyMediaManager\nComment=\nTerminal=false\nIcon=/opt/tinyMediaManager/tmm.png\nType=Application' >> ~/.local/share/applications/tinyMediaManager.desktop
 
 # poedit
-wget https://github.com/vslavik/poedit/releases/download/v2.4.2-oss/poedit-2.4.2.tar.gz
-sudo tar -xf poedit-2.4.2.tar.gz -C /opt
-sudo mv /opt/poedit-2.4.2 /opt/poedit
+wget https://github.com/vslavik/poedit/releases/download/v3.4.1-oss/poedit-3.4.1.tar.gz
+sudo tar -xf poedit-3.4.1.tar.gz -C /opt
+sudo mv /opt/poedit-3.4.1 /opt/poedit
 sudo chown guillo:guillo -R /opt/poedit
 sudo chmod a+rx /opt/poedit
 cd /opt/poedit
@@ -698,6 +665,18 @@ nkr_install libgtkspell3-3-dev
 ./configure
 make
 make install
+
+# arduino
+wget https://downloads.arduino.cc/arduino-ide/arduino-ide_2.2.1_Linux_64bit.AppImage
+wget https://brandslogos.com/wp-content/uploads/images/large/arduino-logo-1.png
+sudo mkdir /opt/arduino
+sudo mv arduino-ide_2.2.1_Linux_64bit.AppImage /opt/arduino/Arduino.AppImage
+sudo mv /tmp/arduino-logo-1.png /opt/arduino/Arduino.png
+sudo chmod a+rx /opt/arduino/Arduino.AppImage
+sudo chmod a+rx /opt/arduino/Arduino.png
+touch ~/.local/share/applications/arduino.desktop
+echo '[Desktop Entry]\nName=Arduino\nExec=/opt/arduino/Arduino.AppImage\nComment=\nTerminal=false\nIcon=/opt/arduino/Arduino.png\nType=Application' >> ~/.local/share/applications/arduino.desktop
+
 
 # download files
 cd /tmp
@@ -733,9 +712,6 @@ cd ~
 # nkr_snap photogimp
 # nkr_snap vectr
 # nkr_snap pinta-james-carroll
-
-# IDE
-nkr_snap arduino
 
 # VS Code extensions
 
@@ -794,14 +770,6 @@ fi
 nkr_install jq
 nkr_install xsel
 nkr_install libnss3-tools
-# composer global require cpriego/valet-linux
-nkr_composer cpriego/valet-linux
-# restarting network-manager
-if [ ! $(composer global show 2>/dev/null | grep -c "valet") -eq 0 ];
-  then
-    nkr_echo "Installing valet"
-    valet install
-fi
 
 #restart cache
 sudo fc-cache -f -v
