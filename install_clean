@@ -5,7 +5,7 @@ LOG_FILE="installation_log.txt"
 
 # Función para registrar en el log
 log() {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "$LOG_FILE"
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
 }
 
 # Limpiamos el log anterior
@@ -13,7 +13,7 @@ echo "Inicio de instalación" > "$LOG_FILE"
 
 # Actualizamos la lista de paquetes
 log "Actualizando la lista de paquetes"
-sudo apt update >> "$LOG_FILE" 2>&1
+sudo apt update | tee -a "$LOG_FILE"
 
 # Instalamos los paquetes
 PACKAGES=(
@@ -40,7 +40,8 @@ PACKAGES=(
 
 for PACKAGE in "${PACKAGES[@]}"; do
     log "Instalando $PACKAGE"
-    sudo apt install -y "$PACKAGE" >> "$LOG_FILE" 2>&1
+    # Usamos "DEBIAN_FRONTEND=interactive" para permitir interacciones
+    sudo DEBIAN_FRONTEND=interactive apt install -y "$PACKAGE" | tee -a "$LOG_FILE"
 done
 
 log "Instalación completa"
