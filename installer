@@ -160,8 +160,17 @@ sudo aptitude install --install-recommends -y \
   
 # docker
 sudo apt-get install --install-recommends -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-sudo groupadd docker
-sudo usermod -aG docker $USER
+
+if ! getent group docker > /dev/null; then
+    sudo groupadd docker
+    echo "Grupo 'docker' creado."
+else
+    echo "El grupo 'docker' ya existe."
+fi
+
+sudo usermod -aG docker "$USER"
+echo "Usuario $USER añadido al grupo 'docker'."
+
 newgrp docker
 
 sudo apt install --install-recommends -y sublime-text google-chrome-stable spotify-client code google-cloud-cli transmission-gtk
