@@ -263,7 +263,6 @@ sudo aptitude install -y \
   kazam \
   extundelete \
   audacity \
-  gimp \
   gphoto2 \
   gthumb \
   jq \
