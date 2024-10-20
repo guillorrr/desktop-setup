@@ -1,122 +1,5 @@
 #!/bin/bash
 
-nkr_echo() {
-  local fmt="$1"; shift
-  printf "\n$fmt\n" "$@"
-}
-
-nkr_sources() {
-  local ppa="$1"
-  local source="$2"
-    if [ $(grep ^ /etc/apt/sources.list /etc/apt/sources.list.d/* 2>/dev/null | grep -c "$ppa") -eq 0 ];
-      then
-        nkr_echo "$ppa add successful"
-        echo "$source" | sudo tee -a /etc/apt/sources.list.d/"$ppa".list
-    fi
-}
-
-nkr_ppa() {
-  local ppa="$1"
-    if [ $(grep ^ /etc/apt/sources.list /etc/apt/sources.list.d/* 2>/dev/null | grep -c "$ppa") -eq 0 ];
-      then
-        nkr_echo "Adding ppa:$ppa"
-        sudo add-apt-repository -y ppa:$ppa;
-    fi
-}
-
-nkr_ppa_install() {
-  local ppa="$1"
-    if [ ! $(grep ^ /etc/apt/sources.list /etc/apt/sources.list.d/* 2>/dev/null | grep -c "$ppa") -eq 0 ];
-      then
-        nkr_echo "Installing $ppa"
-        sudo aptitude install -y "$ppa";
-    fi
-}
-
-nkr_install() {
-  local package="$1"
-    if [ $(dpkg-query -W -f='${Status}' "$package" 2>/dev/null | grep -c "ok installed") -eq 0 ];
-      then
-        nkr_echo "Installing $package"
-        sudo aptitude install -y "$package";
-    fi
-}
-
-nkr_snap() {
-  local package="$1"
-  local version="$2"
-    if [ $(snap info "$package" 2>/dev/null | grep -c "installed") -eq 0 ];
-      then
-        nkr_echo "Installing $package"
-        sudo snap install "$package" --"$version";
-    fi
-}
-
-nkr_code() {
-  local package="$1"
-    if [ $(code --list-extensions 2>/dev/null | grep -c "$package") -eq 0 ];
-      then
-        nkr_echo "Installing $package"
-        code --install-extension "$package";
-    fi
-}
-
-nkr_dpkg(){
-  local package=$(dpkg-deb -f "$1" Package 2>/dev/null)
-    if [ $(dpkg-query -W -f='${Status}' "$package" 2>/dev/null | grep -c "ok installed") -eq 0 ];
-      then
-        nkr_echo "Installing $package"
-        sudo gdebi "$1" -n
-    fi
-}
-
-nkr_composer(){
-  local composer=$1
-    if [ $(composer global show 2>/dev/null | grep -c "$composer") -eq 0 ];
-      then
-        nkr_echo "Installing $composer"
-        composer global require "$composer"
-    fi
-}
-
-export_to_zshrc() {
-  local text="$1" zshrc
-  local skip_new_line="${2:-0}"
-
-  if [ -w "$HOME/.zshrc.local" ]; then
-    zshrc="$HOME/.zshrc.local"
-  else
-    zshrc="$HOME/.zshrc"
-  fi
-
-  if ! grep -Fqs "$text" "$zshrc"; then
-    if [ "$skip_new_line" -eq 1 ]; then
-      printf "%s\n" "$text" >> "$zshrc"
-    else
-      printf "\n%s\n" "$text" >> "$zshrc"
-    fi
-  fi
-}
-
-trap 'ret=$?; test $ret -ne 0 && printf "failed\n\n" >&2; exit $ret' EXIT
-set -e
-
-if [[ ! -d "$HOME/.bin/" ]]; then
-  mkdir "$HOME/.bin"
-fi
-
-if [ ! -f "$HOME/.zshrc" ]; then
-  touch "$HOME/.zshrc"
-fi
-
-nkr_echo "Updating system packages ..."
-if command -v aptitude >/dev/null; then
-  nkr_echo "Using aptitude ..."
-else
-  nkr_echo "Installing aptitude ..."
-  sudo apt install aptitude
-fi
-
 sudo aptitude update && sudo aptitude upgrade -y
 
 # docker
@@ -138,11 +21,7 @@ echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.clou
 
 # google chrome (also for development)
 wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmor -o /usr/share/keyrings/chrome-keyring.gpg
-sudo sh -c 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/chrome-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list'
-
-# Microsoft Teams
-curl https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null
-sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/ms-teams stable main" > /etc/apt/sources.list.d/teams.list'
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/chrome-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list
 
 # Spotify
 curl -sS https://download.spotify.com/debian/pubkey_6224F9941A8AA6D1.gpg | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/spotify.gpg
@@ -154,22 +33,15 @@ sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/
 echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | sudo tee /etc/apt/sources.list.d/vscode.list > /dev/null
 rm -f packages.microsoft.gpg
 
-# Balena Etcher
-# sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 379CE192D401AB61
-# nkr_sources balena-etcher-electron "deb https://deb.etcher.io stable etcher"
-curl -1sLf 'https://dl.cloudsmith.io/public/balena/etcher/setup.deb.sh' | sudo -E bash
-
 sudo add-apt-repository ppa:ubuntuhandbook1/transmission -y
 sudo add-apt-repository ppa:ubuntuhandbook1/audacity -y
 sudo add-apt-repository ppa:ubuntuhandbook1/vlc -y
 sudo add-apt-repository ppa:linrunner/tlp -y
-sudo add-apt-repository ppa:obsproject/obs-studio -y
 sudo add-apt-repository universe -y
-sudo add-apt-repository ppa:inkscape.dev/stable -y
 
 sudo aptitude update && sudo aptitude upgrade -y
 
-sudo aptitude install -y \
+sudo aptitude install --install-recommends -y \
   wget \
   curl \
   whois \
@@ -287,21 +159,25 @@ sudo aptitude install -y \
   gthumb
   
 # docker
-sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo apt-get install --install-recommends -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 sudo groupadd docker
 sudo usermod -aG docker $USER
 newgrp docker
 
-sudo apt install sublime-text google-chrome-stable teams spotify-client code google-cloud-cli
-sudo apt-get install balena-etcher-electron shutter obs-studio inkscape freecad telegram-desktop gdebi wine64 transmission-gtk
-sudo apt upgrade vlc
-
-# TLP - saves battery when Ubuntu is installed on Laptops
-sudo apt remove laptop-mode-tools
-sudo tlp start
+sudo apt install --install-recommends -y sublime-text google-chrome-stable spotify-client code google-cloud-cli transmission-gtk
 
 # Transmission
 xdg-mime default transmission-gtk.desktop x-scheme-handler/magnet
+
+# Preguntar si el dispositivo es una notebook
+read -p "¿Es este un dispositivo portátil (notebook)? (s/n): " is_notebook
+if [[ "$is_notebook" == "s" || "$is_notebook" == "S" ]]; then
+    echo "Configurando TLP para optimizar el uso de batería..."
+    sudo apt remove laptop-mode-tools
+    sudo tlp start
+else
+    echo "No se configurará TLP."
+fi
 
 #restart cache
 sudo fc-cache -f -v
