@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# Definimos el archivo de log
+LOG_FILE="installation_log.txt"
+
+# Función para registrar en el log
+log() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
+}
+
+# Limpiamos el log anterior
+echo "Inicio de instalación" > "$LOG_FILE"
+
+# Actualizamos la lista de paquetes
+log "Actualizando la lista de paquetes"
+sudo apt update | tee -a "$LOG_FILE"
+
+# Instalamos los paquetes
+PACKAGES=(
+    wget curl whois net-tools nmap ping apt-transport-https ca-certificates
+    gnupg-agent git build-essential libssl-dev software-properties-common
+    vim sed tree silversearcher-ag xclip htop ncdu terminator screen ssh
+    rsync tmux putty expect xrdp samba passwdqc ecryptfs-utils cryptsetup
+    gparted exfat-fuse exfat-utils hfsplus hfsutils ntfs-3g mtp-tools
+    ipheth-utils ideviceinstaller ifuse unace unrar zip unzip p7zip-full
+    p7zip-rar sharutils rar uudeview mpack arj cabextract file-roller
+    printer-driver-all aircrack-ng gprename renrot cpu-x libimage-exiftool-perl
+    ffmpegthumbnailer ubuntu-restricted-extras ffmpeg libavcodec-extra
+    gnome-session-flashback gnome-tweak-tool gkrellm conky conky-all
+    lm-sensors hddtemp tlp tlp-rdw smartmontools ethtool make cmake g++
+    gcc gitk filezilla default-jre default-jdk cpu-checker remmina rclone
+    vlc vlc-plugin-access-extra libbluray-bdj libdvdcss2 simplescreenrecorder
+    kazam obs-studio extundelete audacity transmission-gtk gimp gimp-cbmplugs
+    gimp-dcraw gimp-dds gimp-gap gimp-gluas gimp-gmic gimp-gutenprint
+    gimp-normalmap gimp-texturize gphoto2 graphicsmagick-db gthumb jq xsel
+    libnss3-tools libicu-dev libgtkspell-dev libdb++-dev liblucene++-dev
+    libboost-dev libboost-regex-dev libboost-system-dev libwxgtk3.0-gtk3-dev
+    libcld2-0 libgtkspell3-3-dev
+)
+
+for PACKAGE in "${PACKAGES[@]}"; do
+    log "Instalando $PACKAGE"
+    # Usamos "DEBIAN_FRONTEND=interactive" para permitir interacciones
+    sudo DEBIAN_FRONTEND=interactive apt install -y "$PACKAGE" | tee -a "$LOG_FILE"
+done
+
+log "Instalación completa"
+echo "Instalación completa. Ver el log en $LOG_FILE."
