@@ -117,7 +117,7 @@ else
   sudo apt install aptitude
 fi
 
-sudo aptitude update -y && sudo aptitude upgrade
+sudo aptitude update && sudo aptitude upgrade -y
 
 # docker
 sudo install -m 0755 -d /etc/apt/keyrings
@@ -161,14 +161,13 @@ curl -1sLf 'https://dl.cloudsmith.io/public/balena/etcher/setup.deb.sh' | sudo -
 
 sudo add-apt-repository ppa:ubuntuhandbook1/transmission -y
 sudo add-apt-repository ppa:ubuntuhandbook1/audacity -y
-sudo add-apt-repository ppa:ubuntuhandbook1/gimp -y
 sudo add-apt-repository ppa:ubuntuhandbook1/vlc -y
 sudo add-apt-repository ppa:linrunner/tlp -y
 sudo add-apt-repository ppa:obsproject/obs-studio -y
 sudo add-apt-repository universe -y
 sudo add-apt-repository ppa:inkscape.dev/stable -y
 
-sudo aptitude update -y
+sudo aptitude update && sudo aptitude upgrade -y
 
 sudo aptitude install -y \
   wget \
@@ -205,7 +204,6 @@ sudo aptitude install -y \
   cryptsetup \
   gparted \
   exfat-fuse \
-  exfat-utils \
   hfsplus \
   hfsutils \
   ntfs-3g \
@@ -242,7 +240,6 @@ sudo aptitude install -y \
   conky \
   conky-all \
   lm-sensors \
-  hddtemp \
   tlp \
   tlp-rdw \
   smartmontools \
@@ -267,21 +264,10 @@ sudo aptitude install -y \
   extundelete \
   audacity \
   gimp \
-  gimp-cbmplugs \
-  gimp-dcraw \
-  gimp-dds \
-  gimp-gap \
-  gimp-gluas \
-  gimp-gmic \
-  gimp-gutenprint \
-  gimp-normalmap \
-  gimp-texturize \
   gphoto2 \
-  graphicsmagick-db \
   gthumb \
   jq \
   xsel \
-  libmpv2 \
   libnss3-tools \
   libicu-dev \
   libgtkspell-dev \
@@ -290,7 +276,6 @@ sudo aptitude install -y \
   libboost-dev \
   libboost-regex-dev \
   libboost-system-dev \
-  libwxgtk3.0-gtk3-dev \
   libcld2-0 \
   libgtkspell3-3-dev \
   libavcodec-dev \
@@ -300,17 +285,7 @@ sudo aptitude install -y \
   libasound2-dev \
   lua5.2 \
   liblua5.2-dev \
-  libxcb* \
-  libvlc* \
-  sketch \
-  tldr \
-  pronterface \
-  maven \
-  gthumb \
-  photocollage \
-  xdotool \
-  android-tools-adb \
-  android-tools-fastboot
+  gthumb
   
 # docker
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
