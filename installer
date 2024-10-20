@@ -43,6 +43,7 @@ rm -f packages.microsoft.gpg
 sudo add-apt-repository ppa:ubuntuhandbook1/transmission -y
 sudo add-apt-repository ppa:ubuntuhandbook1/audacity -y
 sudo add-apt-repository ppa:ubuntuhandbook1/vlc -y
+sudo add-apt-repository ppa:ubuntuhandbook1/gimp -y
 sudo add-apt-repository ppa:linrunner/tlp -y
 sudo add-apt-repository universe -y
 
@@ -162,7 +163,17 @@ sudo apt install --install-recommends -y \
   libasound2-dev \
   lua5.2 \
   liblua5.2-dev \
-  gthumb
+  gthumb \
+  gimp \
+  gimp-cbmplugs \
+  gimp-dds \
+  gimp-gap \
+  gimp-gluas \
+  gimp-gmic \
+  gimp-gutenprint \
+  gimp-normalmap \
+  gimp-texturize \
+  gphoto2
   
 # docker
 sudo apt install --install-recommends -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
