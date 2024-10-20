@@ -1,9 +1,9 @@
 #!/bin/bash
 
 if command -v aptitude >/dev/null; then
-  nkr_echo "Using aptitude ..."
+  echo "Using aptitude ..."
 else
-  nkr_echo "Installing aptitude ..."
+  echo "Installing aptitude ..."
   sudo apt install aptitude
 fi
 
