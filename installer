@@ -159,7 +159,6 @@ rm -f packages.microsoft.gpg
 # nkr_sources balena-etcher-electron "deb https://deb.etcher.io stable etcher"
 curl -1sLf 'https://dl.cloudsmith.io/public/balena/etcher/setup.deb.sh' | sudo -E bash
 
-sudo add-apt-repository ppa:ubuntuhandbook1/ppa -y
 sudo add-apt-repository ppa:ubuntuhandbook1/transmission -y
 sudo add-apt-repository ppa:ubuntuhandbook1/audacity -y
 sudo add-apt-repository ppa:ubuntuhandbook1/gimp -y
@@ -168,11 +167,8 @@ sudo add-apt-repository ppa:linrunner/tlp -y
 sudo add-apt-repository ppa:obsproject/obs-studio -y
 sudo add-apt-repository universe -y
 sudo add-apt-repository ppa:inkscape.dev/stable -y
-sudo add-apt-repository ppa:openscad/releases -y
-sudo add-apt-repository ppa:ozmartian/apps -y
-sudo add-apt-repository ppa:pinta-maintainers/pinta-stable -y
 
-sudo aptitude update
+sudo aptitude update -y
 
 sudo aptitude install -y \
   wget \
@@ -324,7 +320,7 @@ sudo usermod -aG docker $USER
 newgrp docker
 
 sudo apt install sublime-text google-chrome-stable teams spotify-client code google-cloud-cli
-sudo apt-get install balena-etcher-electron shutter obs-studio inkscape pinta openscad freecad vidcutter telegram-desktop gdebi wine64 transmission-gtk
+sudo apt-get install balena-etcher-electron shutter obs-studio inkscape freecad telegram-desktop gdebi wine64 transmission-gtk
 sudo apt upgrade vlc
 
 # TLP - saves battery when Ubuntu is installed on Laptops
