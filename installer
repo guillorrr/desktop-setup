@@ -1,5 +1,12 @@
 #!/bin/bash
 
+if command -v aptitude >/dev/null; then
+  echo "Using aptitude ..."
+else
+  echo "Installing aptitude ..."
+  sudo apt install aptitude
+fi
+
 sudo aptitude update && sudo aptitude upgrade -y
 
 # docker
@@ -171,12 +178,25 @@ fi
 sudo usermod -aG docker "$USER"
 echo "Usuario $USER añadido al grupo 'docker'."
 
-newgrp docker
-
 sudo apt install --install-recommends -y sublime-text google-chrome-stable spotify-client code google-cloud-cli transmission-gtk
 
 # Transmission
 xdg-mime default transmission-gtk.desktop x-scheme-handler/magnet
+
+curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh
+sudo -E bash nodesource_setup.sh
+sudo apt-get install -y nodejs npm
+node -v
+npm -v
+curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh -o nvm_install.sh
+sudo -E bash nvm_install.sh
+
+sudo apt install --install-recommends -y node-typescript gnome-shell-extensions
+
+git clone https://github.com/pop-os/shell.git
+cd shell
+git checkout master_noble
+make local-install
 
 # Preguntar si el dispositivo es una notebook
 read -p "¿Es este un dispositivo portátil (notebook)? (s/n): " is_notebook
