@@ -181,7 +181,6 @@ sudo aptitude install -y \
   ca-certificates \
   gnupg-agent \
   git \
-  git-flow \
   build-essential \
   libssl-dev \
   software-properties-common \
