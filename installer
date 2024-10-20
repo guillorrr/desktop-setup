@@ -1,10 +1,10 @@
 #!/bin/bash
 
-if command -v aptitude >/dev/null; then
+if command -v apt >/dev/null; then
   echo "Using aptitude ..."
 else
   echo "Installing aptitude ..."
-  sudo apt install aptitude
+  sudo apt install --install-recommends -y aptitude
 fi
 
 sudo aptitude update && sudo aptitude upgrade -y
@@ -28,7 +28,7 @@ echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.clou
 
 # google chrome (also for development)
 wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmor -o /usr/share/keyrings/chrome-keyring.gpg
-echo "deb [arch=amd64 signed-by=/usr/share/keyrings/chrome-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/chrome-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee -a /etc/apt/sources.list.d/google.list
 
 # Spotify
 curl -sS https://download.spotify.com/debian/pubkey_6224F9941A8AA6D1.gpg | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/spotify.gpg
@@ -46,9 +46,9 @@ sudo add-apt-repository ppa:ubuntuhandbook1/vlc -y
 sudo add-apt-repository ppa:linrunner/tlp -y
 sudo add-apt-repository universe -y
 
-sudo aptitude update && sudo aptitude upgrade -y
+sudo apt update && sudo apt upgrade -y
 
-sudo aptitude install --install-recommends -y \
+sudo apt install --install-recommends -y \
   wget \
   curl \
   whois \
@@ -166,7 +166,7 @@ sudo aptitude install --install-recommends -y \
   gthumb
   
 # docker
-sudo apt-get install --install-recommends -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo apt install --install-recommends -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 if ! getent group docker > /dev/null; then
     sudo groupadd docker
@@ -185,9 +185,7 @@ xdg-mime default transmission-gtk.desktop x-scheme-handler/magnet
 
 curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh
 sudo -E bash nodesource_setup.sh
-sudo apt-get install -y nodejs npm
-node -v
-npm -v
+sudo apt install -y nodejs npm
 curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh -o nvm_install.sh
 sudo -E bash nvm_install.sh
 
@@ -195,7 +193,7 @@ sudo apt install --install-recommends -y node-typescript gnome-shell-extensions
 
 git clone https://github.com/pop-os/shell.git
 cd shell
-git checkout master_noble
+git checkout master_jammy
 make local-install
 
 # Preguntar si el dispositivo es una notebook
