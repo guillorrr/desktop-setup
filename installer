@@ -325,12 +325,9 @@ fi
 check_sources_list "/etc/apt/sources.list.d/vscode.list" "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main"
 
 # Balena Etcher setup
-if [[ ! -f "/etc/apt/sources.list.d/balena-etcher.list" ]]; then
-    curl -1sLf 'https://dl.cloudsmith.io/public/balena/etcher/setup.deb.sh' | sudo -E bash
-    check_exit_status
-else
-    echo "Balena Etcher repository already added."
-fi
+download_gpg_key "https://dl.cloudsmith.io/public/balena/etcher/gpg.70528471AFF9A051.key" "/usr/share/keyrings/balena-etcher-archive-keyring.gpg"
+check_sources_list "/etc/apt/sources.list.d/balena-etcher.list" "deb [signed-by=/usr/share/keyrings/balena-etcher-archive-keyring.gpg] https://dl.cloudsmith.io/public/balena/etcher/deb/debian any main"
+
 
 # Add other PPAs
 repos=(
