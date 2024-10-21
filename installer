@@ -11,6 +11,38 @@ check_exit_status() {
     fi
 }
 
+# Function to download a GPG key and configure it
+download_gpg_key() {
+    local url=$1
+    local output_path=$2
+
+    # Verificar si la clave ya existe
+    if [[ -f "$output_path" ]]; then
+        echo "GPG key at $output_path already exists, skipping download."
+    else
+        echo "Downloading GPG key from $url..."
+        curl -fsSL "$url" | sudo gpg --dearmor -o "$output_path"
+        check_exit_status
+        echo "GPG key saved to $output_path."
+    fi
+}
+
+# Function to download a GPG key using wget
+download_gpg_key_wget() {
+    local url=$1
+    local output_path=$2
+
+    # Verificar si la clave ya existe
+    if [[ -f "$output_path" ]]; then
+        echo "GPG key at $output_path already exists, skipping download."
+    else
+        echo "Downloading GPG key from $url..."
+        wget -qO - "$url" | gpg --dearmor | sudo tee "$output_path" > /dev/null
+        check_exit_status
+        echo "GPG key saved to $output_path."
+    fi
+}
+
 # Check if required commands are available
 check_command() {
     if ! command -v "$1" &> /dev/null; then
@@ -251,19 +283,20 @@ else
 fi
 
 # Sublime Text setup
-check_gpg_key "/etc/apt/trusted.gpg.d/sublimehq-archive.gpg"
+download_gpg_key_wget "https://download.sublimetext.com/sublimehq-pub.gpg" "/etc/apt/trusted.gpg.d/sublimehq-archive.gpg"
 check_sources_list "/etc/apt/sources.list.d/sublime-text.list" "deb https://download.sublimetext.com/ apt/stable/"
 
+
 # Google Cloud SDK setup
-check_gpg_key "/usr/share/keyrings/cloud.google.gpg"
+download_gpg_key "https://packages.cloud.google.com/apt/doc/apt-key.gpg" "/usr/share/keyrings/cloud.google.gpg"
 check_sources_list "/etc/apt/sources.list.d/google-cloud-sdk.list" "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main"
 
 # Google Chrome setup
-check_gpg_key "/usr/share/keyrings/chrome-keyring.gpg"
+download_gpg_key_wget "https://dl.google.com/linux/linux_signing_key.pub" "/usr/share/keyrings/chrome-keyring.gpg"
 check_sources_list "/etc/apt/sources.list.d/google.list" "deb [arch=amd64 signed-by=/usr/share/keyrings/chrome-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main"
 
 # Spotify setup
-check_gpg_key "/etc/apt/trusted.gpg.d/spotify.gpg"
+download_gpg_key "https://download.spotify.com/debian/pubkey_6224F9941A8AA6D1.gpg" "/etc/apt/trusted.gpg.d/spotify.gpg"
 check_sources_list "/etc/apt/sources.list.d/spotify.list" "deb http://repository.spotify.com stable non-free"
 
 # VSCode setup
