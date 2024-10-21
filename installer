@@ -42,7 +42,13 @@ prompt_for_stage() {
     echo "23. tinyMediaManager installation"
     echo -n "Enter stage number: "
     read -r stage
-    case "$stage" in
+    run_stages_from "$stage"
+}
+
+# Function to run stages from a specific number
+run_stages_from() {
+    current_stage=$1  # Set the current stage globally for retries
+    case "$current_stage" in
         1) stage1 ;;
         2) stage2 ;;
         3) stage3 ;;
@@ -68,6 +74,13 @@ prompt_for_stage() {
         23) stage23 ;;
         *) echo "Invalid stage. Exiting." && exit 1 ;;
     esac
+
+    # Continue automatically with the next stage if no error occurred
+    if [[ "$current_stage" -lt 23 ]]; then
+        run_stages_from $((current_stage + 1))
+    else
+        echo "All stages completed."
+    fi
 }
 
 # Function to download a GPG key and configure it
@@ -162,12 +175,10 @@ install_deb() {
     if [[ -f "$file" ]]; then
         echo "Installing $file..."
         sudo apt install --install-recommends -y "$PWD/$file"
-        if [[ $? -ne 0 ]]; then
-            echo "Error installing $file. Exiting."
-            exit 1
-        fi
+        check_exit_status
     else
         echo "File $file not found, skipping installation."
+        check_exit_status
     fi
 }
 
@@ -366,11 +377,11 @@ stage3() {
     if ! command -v docker &> /dev/null; then
         sudo install -m 0755 -d /etc/apt/keyrings
         sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-        check_exit_status
         sudo chmod a+r /etc/apt/keyrings/docker.asc
         check_sources_list "/etc/apt/sources.list.d/docker.list" "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable"
     else
         echo "Docker is already installed."
+        check_exit_status
     fi
 }
 
@@ -388,7 +399,7 @@ stage5() {
     # echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
     download_gpg_key_wget "https://packages.cloud.google.com/apt/doc/apt-key.gpg" "/usr/share/keyrings/cloud.google.gpg"
     check_sources_list "/etc/apt/sources.list.d/google-cloud-sdk.list" "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main"
-}
+    }
 
 # Stage 6: Google Chrome setup
 stage6() {
@@ -413,7 +424,6 @@ stage8() {
         check_exit_status
         sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
         check_exit_status
-        rm -f packages.microsoft.gpg
     fi
     check_sources_list "/etc/apt/sources.list.d/vscode.list" "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main"
 }
@@ -465,6 +475,7 @@ stage12() {
 
     sudo usermod -aG docker "$USER"
     echo "User $USER added to 'docker' group."
+    check_exit_status
 }
 
 stage13() {
@@ -485,6 +496,7 @@ stage14() {
     check_exit_status
     cd shell || exit
     git checkout master_jammy
+    check_exit_status
 }
 
 stage15() {
@@ -497,6 +509,7 @@ stage15() {
     else
         echo "Skipping TLP configuration."
     fi
+    check_exit_status
 }
 
 stage16() {
@@ -557,6 +570,7 @@ stage16() {
     else
         echo "youtube-dl already exists, skipping download."
     fi
+    check_exit_status
 }
 
 stage17() {
@@ -568,6 +582,7 @@ stage17() {
     create_symlink "/opt/blender/blender" "/usr/bin/blender"
     create_desktop_entry "~/.local/share/applications/blender.desktop" \
     '[Desktop Entry]\nName=Blender\nExec=blender\nComment=\nTerminal=false\nIcon=/opt/blender/blender.svg\nType=Application'
+    check_exit_status
 }
 
 stage18() {
@@ -576,6 +591,7 @@ stage18() {
     extract_tar "datagrip-2024.2.2.tar.gz" "/opt"
     move_file "/opt/DataGrip-2024.2.2" "/opt/datagrip"
     run_gui_app "/opt/datagrip/bin/datagrip.sh"
+    check_exit_status
 }
 
 stage19() {
@@ -584,6 +600,7 @@ stage19() {
     extract_tar "PhpStorm-2024.2.3.tar.gz" "/opt"
     move_file "/opt/PhpStorm-242.23339.16" "/opt/phpstorm"
     run_gui_app "/opt/phpstorm/bin/phpstorm.sh"
+    check_exit_status
 }
 
 stage20() {
@@ -599,6 +616,7 @@ stage20() {
     apply_permissions "/opt/prusaslicer/PrusaSlicer.png" "a+rx"
     create_desktop_entry "~/.local/share/applications/prusaslicer.desktop" \
     '[Desktop Entry]\nName=PrusaSlicer\nExec=/opt/prusaslicer/PrusaSlicer.AppImage\nComment=\nTerminal=false\nIcon=/opt/prusaslicer/PrusaSlicer.png\nType=Application'
+    check_exit_status
 }
 
 stage21() {
@@ -612,6 +630,7 @@ stage21() {
     apply_permissions "/opt/cura/Ultimaker_Cura.png" "a+rx"
     create_desktop_entry "~/.local/share/applications/cura.desktop" \
     '[Desktop Entry]\nName=Ultimaker Cura\nExec=/opt/cura/Ultimaker_Cura.AppImage\nComment=\nTerminal=false\nIcon=/opt/cura/Ultimaker_Cura.png\nType=Application'
+    check_exit_status
 }
 
 stage22() {
@@ -625,6 +644,7 @@ stage22() {
     apply_permissions "/opt/meshlab/MeshLab.png" "a+rx"
     create_desktop_entry "~/.local/share/applications/meshlab.desktop" \
     '[Desktop Entry]\nName=MeshLab\nExec=/opt/meshlab/MeshLab.AppImage\nComment=\nTerminal=false\nIcon=/opt/meshlab/MeshLab.png\nType=Application'
+    check_exit_status
 }
 
 stage23() {
@@ -636,6 +656,7 @@ stage23() {
     create_symlink "/opt/tinyMediaManager/tinyMediaManager" "/usr/bin/tinyMediaManager"
     create_desktop_entry "~/.local/share/applications/tinyMediaManager.desktop" \
     '[Desktop Entry]\nName=tinyMediaManager\nExec=tinyMediaManager\nComment=\nTerminal=false\nIcon=/opt/tinyMediaManager/tmm.png\nType=Application'
+    check_exit_status
 }
 
 prompt_for_stage
