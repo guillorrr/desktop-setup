@@ -499,7 +499,7 @@ stage15() {
     fi
 }
 
-stage 16() {
+stage16() {
     # download files
     cd /tmp
 
