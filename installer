@@ -1,5 +1,8 @@
 #!/bin/bash
 
+LOG_FILE="./install_script.log"
+exec > >(tee -a "$LOG_FILE") 2>&1  # Redirige toda la salida a un archivo de log
+
 # Function to check the last command's exit status and exit if an error occurs
 check_exit_status() {
     if [[ $? -ne 0 ]]; then
@@ -73,7 +76,7 @@ install_deb() {
 # download and check functions
 download_file() {
     local url=$1
-    local file_name=${2:-$(basename "$url")}  # Si no se proporciona un segundo argumento, usa el nombre base de la URL
+    local file_name=${2:-$(basename "$url")}
 
     if [[ -f "$file_name" ]]; then
         echo "$file_name already exists, skipping download."
@@ -87,23 +90,19 @@ download_file() {
     fi
 }
 
+# Function to extract a tar file
 extract_tar() {
     local file=$1
     local dest=$2
-    local base_dir=$(basename "$file" .tar.xz)  # Obtener el nombre base del archivo sin la extensión .tar.xz
+    local base_dir=$(basename "$file" .tar.xz)
 
-    # Verificar si el archivo de tar existe
     if [[ -f "$file" ]]; then
-        # Verificar si el directorio de destino existe
         if [[ -d "$dest/$base_dir" && ! -z "$(ls -A "$dest/$base_dir")" ]]; then
             echo "Directory $dest/$base_dir already exists and is not empty. Skipping extraction."
         else
             echo "Extracting $file to $dest..."
             sudo tar -xf "$file" -C "$dest"
-            if [[ $? -ne 0 ]]; then
-                echo "Error extracting $file. Exiting."
-                exit 1
-            fi
+            check_exit_status
         fi
     else
         echo "File $file not found. Exiting."
@@ -111,23 +110,19 @@ extract_tar() {
     fi
 }
 
-
+# Function to extract a zip file
 extract_zip() {
     local file=$1
     local dest=$2
-    local base_dir=$(basename "$file" .zip)  # Obtener el nombre base del archivo sin la extensión .zip
+    local base_dir=$(basename "$file" .zip)
 
     if [[ -f "$file" ]]; then
-        # Verificar si el directorio de destino ya existe y si no está vacío
         if [[ -d "$dest/$base_dir" && ! -z "$(ls -A "$dest/$base_dir")" ]]; then
             echo "Directory $dest/$base_dir already exists and is not empty. Skipping extraction."
         else
             echo "Extracting $file to $dest..."
             sudo unzip "$file" -d "$dest"
-            if [[ $? -ne 0 ]]; then
-                echo "Error extracting $file. Exiting."
-                exit 1
-            fi
+            check_exit_status
         fi
     else
         echo "File $file not found. Exiting."
@@ -135,23 +130,18 @@ extract_zip() {
     fi
 }
 
-
+# Function to move a file
 move_file() {
     local src=$1
     local dest=$2
 
-    # Verificar si la fuente existe
     if [[ -e "$src" ]]; then
-        # Verificar si el destino ya existe y no está vacío
         if [[ -e "$dest" && ! -z "$(ls -A "$dest" 2>/dev/null)" ]]; then
             echo "Destination $dest already exists and is not empty. Skipping move."
         else
             echo "Moving $src to $dest..."
             sudo mv "$src" "$dest"
-            if [[ $? -ne 0 ]]; then
-                echo "Error moving $src to $dest. Exiting."
-                exit 1
-            fi
+            check_exit_status
         fi
     else
         echo "Source $src not found. Exiting."
@@ -159,38 +149,28 @@ move_file() {
     fi
 }
 
-
-# Check if .desktop file exists and is not empty
+# Function to create a desktop entry
 create_desktop_entry() {
     local file_path=$1
     local content=$2
-    local dir_path=$(dirname "$file_path")  # Obtener el directorio del archivo
+    local dir_path=$(dirname "$file_path")
 
-    # Verificar si el directorio existe
     if [[ ! -d "$dir_path" ]]; then
         echo "Directory $dir_path does not exist. Creating..."
-        mkdir -p "$dir_path"  # Crear el directorio si no existe
-        if [[ $? -ne 0 ]]; then
-            echo "Error creating directory $dir_path. Exiting."
-            exit 1
-        fi
+        mkdir -p "$dir_path"
+        check_exit_status
     fi
 
-    # Verificar si el archivo existe y no está vacío
     if [[ -f "$file_path" && -s "$file_path" ]]; then
         echo "$file_path already exists and is not empty. Skipping creation."
     else
         echo "Creating $file_path..."
         echo -e "$content" > "$file_path"
-        if [[ $? -ne 0 ]]; then
-            echo "Error creating $file_path. Exiting."
-            exit 1
-        fi
+        check_exit_status
     fi
 }
 
-
-# Apply permissions only if the file exists
+# Function to apply permissions
 apply_permissions() {
     local file=$1
     local permissions=$2
@@ -198,6 +178,7 @@ apply_permissions() {
     if [[ -f "$file" ]]; then
         echo "Applying permissions $permissions to $file..."
         sudo chmod "$permissions" "$file"
+        check_exit_status
     else
         echo "File $file not found, skipping chmod."
     fi
@@ -226,8 +207,8 @@ run_gui_app() {
 
 # Check if symbolic link exists, and create it if not
 create_symlink() {
-    local target=$1   # El archivo o directorio al que apunta el enlace
-    local link_name=$2   # El nombre del enlace simbólico
+    local target=$1
+    local link_name=$2
 
     if [[ -L "$link_name" ]]; then
         echo "Symlink $link_name already exists. Skipping creation."
@@ -236,15 +217,11 @@ create_symlink() {
     else
         echo "Creating symlink $link_name -> $target..."
         ln -s "$target" "$link_name"
-        if [[ $? -ne 0 ]]; then
-            echo "Error creating symlink $link_name. Exiting."
-            exit 1
-        fi
+        check_exit_status
     fi
 }
 
-
-# Ensure wget, curl, gpg are installed
+# Verificar que los comandos básicos están disponibles
 check_command "wget"
 check_command "curl"
 check_command "gpg"
