@@ -1,8 +1,5 @@
 #!/bin/bash
 
-LOG_FILE="./install_script.log"
-exec > >(tee -a "$LOG_FILE") 2>&1  # Redirige toda la salida a un archivo de log
-
 # Function to check the last command's exit status and exit if an error occurs
 check_exit_status() {
     if [[ $? -ne 0 ]]; then
