@@ -270,6 +270,27 @@ fi
 sudo aptitude update && sudo aptitude upgrade -y
 check_exit_status
 
+# Install necessary software
+echo "Installing required software..."
+sudo apt install --install-recommends -y \
+    wget curl whois net-tools nmap apt-transport-https ca-certificates gnupg-agent git build-essential \
+    libssl-dev software-properties-common vim sed tree silversearcher-ag xclip htop ncdu terminator screen \
+    ssh openssh-client rsync tmux putty expect xrdp samba passwdqc ecryptfs-utils cryptsetup gparted exfat-fuse \
+    hfsplus hfsutils ntfs-3g mtp-tools ipheth-utils ideviceinstaller ifuse unace unrar zip unzip p7zip-full \
+    p7zip-rar sharutils rar uudeview mpack arj cabextract file-roller printer-driver-all aircrack-ng gprename \
+    renrot cpu-x libimage-exiftool-perl ffmpegthumbnailer ubuntu-restricted-extras ffmpeg libavcodec-extra gnome-session-flashback \
+    gnome-tweaks gkrellm conky conky-all lm-sensors tlp tlp-rdw smartmontools ethtool make cmake g++ gcc gitk \
+    filezilla default-jre default-jdk cpu-checker remmina rclone vlc vlc-plugin-access-extra libbluray-bdj libdvdcss2 \
+    simplescreenrecorder kazam extundelete audacity gphoto2 gthumb jq xsel libnss3-tools libicu-dev libgtkspell-dev \
+    libdb++-dev liblucene++-dev libboost-dev libboost-regex-dev libboost-system-dev libcld2-0 libgtkspell3-3-dev \
+    libavcodec-dev libavformat-dev libswscale-dev liba52-0.7.4-dev libasound2-dev lua5.2 liblua5.2-dev gthumb gimp \
+    gimp-cbmplugs gimp-dds gimp-gap gimp-gluas gimp-gutenprint gimp-normalmap gimp-texturize gphoto2 tldr \
+    pronterface photocollage xdotool android-tools-adb android-tools-fastboot docker-ce docker-ce-cli containerd.io \
+    docker-buildx-plugin docker-compose-plugin sublime-text google-chrome-stable spotify-client code google-cloud-cli \
+    transmission-gtk balena-etcher-electron shutter obs-studio vidcutter pinta openscad inkscape freecad telegram-desktop \
+    gdebi wine64
+check_exit_status
+
 # Docker setup
 if ! command -v docker &> /dev/null; then
     echo "Installing Docker..."
@@ -334,27 +355,6 @@ for repo in "${repos[@]}"; do
 done
 
 sudo apt update && sudo apt upgrade -y
-check_exit_status
-
-# Install necessary software
-echo "Installing required software..."
-sudo apt install --install-recommends -y \
-    wget curl whois net-tools nmap apt-transport-https ca-certificates gnupg-agent git build-essential \
-    libssl-dev software-properties-common vim sed tree silversearcher-ag xclip htop ncdu terminator screen \
-    ssh openssh-client rsync tmux putty expect xrdp samba passwdqc ecryptfs-utils cryptsetup gparted exfat-fuse \
-    hfsplus hfsutils ntfs-3g mtp-tools ipheth-utils ideviceinstaller ifuse unace unrar zip unzip p7zip-full \
-    p7zip-rar sharutils rar uudeview mpack arj cabextract file-roller printer-driver-all aircrack-ng gprename \
-    renrot cpu-x libimage-exiftool-perl ffmpegthumbnailer ubuntu-restricted-extras ffmpeg libavcodec-extra gnome-session-flashback \
-    gnome-tweaks gkrellm conky conky-all lm-sensors tlp tlp-rdw smartmontools ethtool make cmake g++ gcc gitk \
-    filezilla default-jre default-jdk cpu-checker remmina rclone vlc vlc-plugin-access-extra libbluray-bdj libdvdcss2 \
-    simplescreenrecorder kazam extundelete audacity gphoto2 gthumb jq xsel libnss3-tools libicu-dev libgtkspell-dev \
-    libdb++-dev liblucene++-dev libboost-dev libboost-regex-dev libboost-system-dev libcld2-0 libgtkspell3-3-dev \
-    libavcodec-dev libavformat-dev libswscale-dev liba52-0.7.4-dev libasound2-dev lua5.2 liblua5.2-dev gthumb gimp \
-    gimp-cbmplugs gimp-dds gimp-gap gimp-gluas gimp-gutenprint gimp-normalmap gimp-texturize gphoto2 tldr \
-    pronterface photocollage xdotool android-tools-adb android-tools-fastboot docker-ce docker-ce-cli containerd.io \
-    docker-buildx-plugin docker-compose-plugin sublime-text google-chrome-stable spotify-client code google-cloud-cli \
-    transmission-gtk balena-etcher-electron shutter obs-studio vidcutter pinta openscad inkscape freecad telegram-desktop \
-    gdebi wine64
 check_exit_status
 
 # Add Docker group and user
