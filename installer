@@ -285,10 +285,7 @@ sudo apt install --install-recommends -y \
     libdb++-dev liblucene++-dev libboost-dev libboost-regex-dev libboost-system-dev libcld2-0 libgtkspell3-3-dev \
     libavcodec-dev libavformat-dev libswscale-dev liba52-0.7.4-dev libasound2-dev lua5.2 liblua5.2-dev gthumb gimp \
     gimp-cbmplugs gimp-dds gimp-gap gimp-gluas gimp-gutenprint gimp-normalmap gimp-texturize gphoto2 tldr \
-    pronterface photocollage xdotool android-tools-adb android-tools-fastboot docker-ce docker-ce-cli containerd.io \
-    docker-buildx-plugin docker-compose-plugin sublime-text google-chrome-stable spotify-client code google-cloud-cli \
-    transmission-gtk balena-etcher-electron shutter obs-studio vidcutter pinta openscad inkscape freecad telegram-desktop \
-    gdebi wine64
+    pronterface photocollage xdotool android-tools-adb android-tools-fastboot 
 check_exit_status
 
 # Docker setup
@@ -355,6 +352,14 @@ for repo in "${repos[@]}"; do
 done
 
 sudo apt update && sudo apt upgrade -y
+check_exit_status
+
+echo "Installing required software..."
+sudo apt install --install-recommends -y \
+    docker-ce docker-ce-cli containerd.io \
+    docker-buildx-plugin docker-compose-plugin sublime-text google-chrome-stable spotify-client code google-cloud-cli \
+    transmission-gtk balena-etcher-electron shutter obs-studio vidcutter pinta openscad inkscape freecad telegram-desktop \
+    gdebi wine64
 check_exit_status
 
 # Add Docker group and user
