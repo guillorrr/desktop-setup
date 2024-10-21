@@ -40,12 +40,18 @@ sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/
 echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | sudo tee /etc/apt/sources.list.d/vscode.list > /dev/null
 rm -f packages.microsoft.gpg
 
+# Balena Etcher
+curl -1sLf 'https://dl.cloudsmith.io/public/balena/etcher/setup.deb.sh' | sudo -E bash
+
 sudo add-apt-repository ppa:ubuntuhandbook1/transmission -y
 sudo add-apt-repository ppa:ubuntuhandbook1/audacity -y
 sudo add-apt-repository ppa:ubuntuhandbook1/vlc -y
 sudo add-apt-repository ppa:ubuntuhandbook1/gimp -y
 sudo add-apt-repository ppa:linrunner/tlp -y
 sudo add-apt-repository universe -y
+sudo add-apt-repository ppa:obsproject/obs-studio -y
+sudo add-apt-repository ppa:inkscape.dev/stable -y
+sudo add-apt-repository ppa:ozmartian/apps -y
 
 sudo apt update && sudo apt upgrade -y
 
@@ -173,7 +179,13 @@ sudo apt install --install-recommends -y \
   gimp-gutenprint \
   gimp-normalmap \
   gimp-texturize \
-  gphoto2
+  gphoto2 \
+  tldr \
+  pronterface \
+  photocollage \
+  xdotool \
+  android-tools-adb \
+  android-tools-fastboot
   
 # docker
 sudo apt install --install-recommends -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
@@ -188,7 +200,8 @@ fi
 sudo usermod -aG docker "$USER"
 echo "Usuario $USER añadido al grupo 'docker'."
 
-sudo apt install --install-recommends -y sublime-text google-chrome-stable spotify-client code google-cloud-cli transmission-gtk
+sudo apt install --install-recommends -y sublime-text google-chrome-stable spotify-client code google-cloud-cli transmission-gtk 
+sudo apt install --install-recommends -y balena-etcher-electron shutter obs-studio vidcutter pinta openscad inkscape freecad telegram-desktop gdebi wine64 transmission-gtk
 
 # Transmission
 xdg-mime default transmission-gtk.desktop x-scheme-handler/magnet
