@@ -3,9 +3,71 @@
 # Function to check the last command's exit status and exit if an error occurs
 check_exit_status() {
     if [[ $? -ne 0 ]]; then
-        echo "An error occurred. Exiting."
-        exit 1
+        echo "An error occurred. Do you want to continue from a specific stage? (y/n)"
+        read -r continue_from_stage
+        if [[ "$continue_from_stage" == "y" || "$continue_from_stage" == "Y" ]]; then
+            prompt_for_stage
+        else
+            echo "Exiting."
+            exit 1
+        fi
     fi
+}
+
+# Function to prompt user for stage to continue from
+prompt_for_stage() {
+    echo "Choose a stage to continue from:"
+    echo "1. Update & upgrade system"
+    echo "2. Install necessary software"
+    echo "3. Docker setup"
+    echo "4. Sublime Text setup"
+    echo "5. Google Cloud SDK setup"
+    echo "6. Google Chrome setup"
+    echo "7. Spotify setup"
+    echo "8. VSCode setup"
+    echo "9. Balena Etcher setup"
+    echo "10. Additional PPAs"
+    echo "11. Final software installation"
+    echo "12. Dropbox installation"
+    echo "13. NVM installation"
+    echo "14. Pop Shell installation"
+    echo "15. TLP installation"
+    echo "16. debs installation"
+    echo "17. Blender installation"
+    echo "18. DataGrip installation"
+    echo "19. PhpStorm installation"
+    echo "20. PrusaSlicer installation"
+    echo "21. Ultimaker Cura installation"
+    echo "22. Meshlab installation"
+    echo "23. tinyMediaManager installation"
+    echo -n "Enter stage number: "
+    read -r stage
+    case "$stage" in
+        1) stage1 ;;
+        2) stage2 ;;
+        3) stage3 ;;
+        4) stage4 ;;
+        5) stage5 ;;
+        6) stage6 ;;
+        7) stage7 ;;
+        8) stage8 ;;
+        9) stage9 ;;
+        10) stage10 ;;
+        11) stage11 ;;
+        12) stage12 ;;
+        13) stage13 ;;
+        14) stage14 ;;
+        15) stage15 ;;
+        16) stage16 ;;
+        17) stage17 ;;
+        18) stage18 ;;
+        19) stage19 ;;
+        20) stage20 ;;
+        21) stage21 ;;
+        22) stage22 ;;
+        23) stage23 ;;
+        *) echo "Invalid stage. Exiting." && exit 1 ;;
+    esac
 }
 
 # Function to download a GPG key and configure it
@@ -20,7 +82,14 @@ download_gpg_key() {
         echo "Downloading GPG key from $url..."
         curl -fsSL "$url" | sudo gpg --dearmor -o "$output_path"
         check_exit_status
-        echo "GPG key saved to $output_path."
+
+        # Verificar si la clave se descargó correctamente
+        if [[ -f "$output_path" ]]; then
+            echo "GPG key saved to $output_path."
+        else
+            echo "Error: GPG key could not be saved. Exiting."
+            exit 1
+        fi
     fi
 }
 
@@ -245,7 +314,7 @@ create_symlink() {
         echo "A file or directory named $link_name already exists but is not a symlink. Skipping creation."
     else
         echo "Creating symlink $link_name -> $target..."
-        ln -s "$target" "$link_name"
+        sudo ln -s "$target" "$link_name"
         check_exit_status
     fi
 }
@@ -264,255 +333,312 @@ else
     echo "Using aptitude ..."
 fi
 
-sudo aptitude update && sudo aptitude upgrade -y
-check_exit_status
-
-# Install necessary software
-echo "Installing required software..."
-sudo apt install --install-recommends -y \
-    wget curl whois net-tools nmap apt-transport-https ca-certificates gnupg-agent git build-essential \
-    libssl-dev software-properties-common vim sed tree silversearcher-ag xclip htop ncdu terminator screen \
-    ssh openssh-client rsync tmux putty expect xrdp samba passwdqc ecryptfs-utils cryptsetup gparted exfat-fuse \
-    hfsplus hfsutils ntfs-3g mtp-tools ipheth-utils ideviceinstaller ifuse unace unrar zip unzip p7zip-full \
-    p7zip-rar sharutils rar uudeview mpack arj cabextract file-roller printer-driver-all aircrack-ng gprename \
-    renrot cpu-x libimage-exiftool-perl ffmpegthumbnailer ubuntu-restricted-extras ffmpeg libavcodec-extra gnome-session-flashback \
-    gnome-tweaks gkrellm conky conky-all lm-sensors tlp tlp-rdw smartmontools ethtool make cmake g++ gcc gitk \
-    filezilla default-jre default-jdk cpu-checker remmina rclone vlc vlc-plugin-access-extra libbluray-bdj libdvdcss2 \
-    simplescreenrecorder kazam extundelete audacity gphoto2 gthumb jq xsel libnss3-tools libicu-dev libgtkspell-dev \
-    libdb++-dev liblucene++-dev libboost-dev libboost-regex-dev libboost-system-dev libcld2-0 libgtkspell3-3-dev \
-    libavcodec-dev libavformat-dev libswscale-dev liba52-0.7.4-dev libasound2-dev lua5.2 liblua5.2-dev gthumb gimp \
-    gimp-cbmplugs gimp-dds gimp-gap gimp-gluas gimp-gutenprint gimp-normalmap gimp-texturize gphoto2 tldr \
-    pronterface photocollage xdotool android-tools-adb android-tools-fastboot 
-check_exit_status
-
-# Docker setup
-if ! command -v docker &> /dev/null; then
-    echo "Installing Docker..."
-    sudo install -m 0755 -d /etc/apt/keyrings
-    sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+# Stage 1: Update & upgrade system
+stage1() {
+    echo "Updating and upgrading system..."
+    sudo aptitude update && sudo aptitude upgrade -y
     check_exit_status
-    sudo chmod a+r /etc/apt/keyrings/docker.asc
-    check_sources_list "/etc/apt/sources.list.d/docker.list" "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable"
-else
-    echo "Docker is already installed."
-fi
+}
 
-# Sublime Text setup
-download_gpg_key_wget "https://download.sublimetext.com/sublimehq-pub.gpg" "/etc/apt/trusted.gpg.d/sublimehq-archive.gpg"
-check_sources_list "/etc/apt/sources.list.d/sublime-text.list" "deb https://download.sublimetext.com/ apt/stable/"
-
-
-# Google Cloud SDK setup
-download_gpg_key "https://packages.cloud.google.com/apt/doc/apt-key.gpg" "/usr/share/keyrings/cloud.google.gpg"
-check_sources_list "/etc/apt/sources.list.d/google-cloud-sdk.list" "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main"
-
-# Google Chrome setup
-download_gpg_key_wget "https://dl.google.com/linux/linux_signing_key.pub" "/usr/share/keyrings/chrome-keyring.gpg"
-check_sources_list "/etc/apt/sources.list.d/google.list" "deb [arch=amd64 signed-by=/usr/share/keyrings/chrome-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main"
-
-# Spotify setup
-download_gpg_key "https://download.spotify.com/debian/pubkey_6224F9941A8AA6D1.gpg" "/etc/apt/trusted.gpg.d/spotify.gpg"
-check_sources_list "/etc/apt/sources.list.d/spotify.list" "deb http://repository.spotify.com stable non-free"
-
-# VSCode setup
-if [[ ! -f "/etc/apt/keyrings/packages.microsoft.gpg" ]]; then
-    wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+# Stage 2: Install necessary software
+stage2() {
+    echo "Installing required software..."
+    sudo apt install --install-recommends -y \
+        wget curl whois net-tools nmap apt-transport-https ca-certificates gnupg-agent git build-essential \
+        libssl-dev software-properties-common vim sed tree silversearcher-ag xclip htop ncdu terminator screen \
+        ssh openssh-client rsync tmux putty expect xrdp samba passwdqc ecryptfs-utils cryptsetup gparted exfat-fuse \
+        hfsplus hfsutils ntfs-3g mtp-tools ipheth-utils ideviceinstaller ifuse unace unrar zip unzip p7zip-full \
+        p7zip-rar sharutils rar uudeview mpack arj cabextract file-roller printer-driver-all aircrack-ng gprename \
+        renrot cpu-x libimage-exiftool-perl ffmpegthumbnailer ubuntu-restricted-extras ffmpeg libavcodec-extra gnome-session-flashback \
+        gnome-tweaks gkrellm conky conky-all lm-sensors tlp tlp-rdw smartmontools ethtool make cmake g++ gcc gitk \
+        filezilla default-jre default-jdk cpu-checker remmina rclone vlc vlc-plugin-access-extra libbluray-bdj libdvdcss2 \
+        simplescreenrecorder kazam extundelete audacity gphoto2 gthumb jq xsel libnss3-tools libicu-dev libgtkspell-dev \
+        libdb++-dev liblucene++-dev libboost-dev libboost-regex-dev libboost-system-dev libcld2-0 libgtkspell3-3-dev \
+        libavcodec-dev libavformat-dev libswscale-dev liba52-0.7.4-dev libasound2-dev lua5.2 liblua5.2-dev gthumb gimp \
+        gimp-cbmplugs gimp-dds gimp-gap gimp-gluas gimp-gutenprint gimp-normalmap gimp-texturize gphoto2 tldr \
+        pronterface photocollage xdotool android-tools-adb android-tools-fastboot
     check_exit_status
-    sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
-    check_exit_status
-    rm -f packages.microsoft.gpg
-fi
-check_sources_list "/etc/apt/sources.list.d/vscode.list" "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main"
+}
 
-# Balena Etcher setup
-download_gpg_key "https://dl.cloudsmith.io/public/balena/etcher/gpg.70528471AFF9A051.key" "/usr/share/keyrings/balena-etcher-archive-keyring.gpg"
-check_sources_list "/etc/apt/sources.list.d/balena-etcher.list" "deb [signed-by=/usr/share/keyrings/balena-etcher-archive-keyring.gpg] https://dl.cloudsmith.io/public/balena/etcher/deb/ubuntu jammy main"
-
-
-# Add other PPAs
-repos=(
-    "ppa:ubuntuhandbook1/transmission"
-    "ppa:ubuntuhandbook1/audacity"
-    "ppa:ubuntuhandbook1/vlc"
-    "ppa:ubuntuhandbook1/gimp"
-    "ppa:linrunner/tlp"
-    "ppa:obsproject/obs-studio"
-    "ppa:inkscape.dev/stable"
-    "ppa:ozmartian/apps"
-)
-
-for repo in "${repos[@]}"; do
-    check_ppa "$repo"
-done
-
-sudo apt update && sudo apt upgrade -y
-check_exit_status
-
-echo "Installing required software..."
-sudo apt install --install-recommends -y \
-    docker-ce docker-ce-cli containerd.io \
-    docker-buildx-plugin docker-compose-plugin sublime-text google-chrome-stable spotify-client code google-cloud-cli \
-    transmission-gtk balena-etcher-electron shutter obs-studio vidcutter pinta openscad inkscape freecad telegram-desktop \
-    gdebi wine64
-check_exit_status
-
-# Add Docker group and user
-if ! getent group docker > /dev/null; then
-    sudo groupadd docker
-    echo "Group 'docker' created."
-else
-    echo "Group 'docker' already exists."
-fi
-
-sudo usermod -aG docker "$USER"
-echo "User $USER added to 'docker' group."
-
-# NVM installation
-curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh -o nvm_install.sh
-check_exit_status
-sudo -E bash nvm_install.sh
-check_exit_status
-
-# Node and typescript installation
-sudo apt install --install-recommends -y node-typescript gnome-shell-extensions
-check_exit_status
-
-# Git clone Pop!_OS Shell
-git clone https://github.com/pop-os/shell.git
-check_exit_status
-cd shell || exit
-git checkout master_jammy
-
-# Ask if the device is a notebook
-read -p "Is this a laptop? (y/n): " is_notebook
-if [[ "$is_notebook" == "y" || "$is_notebook" == "Y" ]]; then
-    echo "Configuring TLP for battery optimization..."
-    sudo apt remove laptop-mode-tools -y
-    sudo tlp start
-else
-    echo "Skipping TLP configuration."
-fi
-
-# download files
-cd /tmp
-
-
-# Dropbox
-download_file "https://www.dropbox.com/download?dl=packages/ubuntu/dropbox_2020.03.04_amd64.deb" "dropbox_2020.03.04_amd64.deb"
-install_deb "dropbox_2020.03.04_amd64.deb"
-
-# TeamViewer
-download_file "https://dl.teamviewer.com/download/linux/version_15x/teamviewer_15.58.4_amd64.deb" "teamviewer_15.58.4_amd64.deb"
-install_deb "teamviewer_15.58.4_amd64.deb"
-
-# PDFsam
-download_file "https://github.com/torakiki/pdfsam/releases/download/v5.2.8/pdfsam_5.2.8-1_amd64.deb" "pdfsam_5.2.8-1_amd64.deb"
-install_deb "pdfsam_5.2.8-1_amd64.deb"
-
-# Slack
-download_file "https://downloads.slack-edge.com/desktop-releases/linux/x64/4.40.133/slack-desktop-4.40.133-amd64.deb" "slack-desktop-4.40.133-amd64.deb"
-install_deb "slack-desktop-4.40.133-amd64.deb"
-
-# Discord
-download_file "https://dl.discordapp.net/apps/linux/0.0.71/discord-0.0.71.deb" "discord-0.0.71.deb"
-install_deb "discord-0.0.71.deb"
-
-# Skype
-download_file "https://repo.skype.com/latest/skypeforlinux-64.deb" "skypeforlinux-64.deb"
-install_deb "skypeforlinux-64.deb"
-
-# Zoom
-download_file "https://zoom.us/client/latest/zoom_amd64.deb" "zoom_amd64.deb"
-install_deb "zoom_amd64.deb"
-
-# MySQL Workbench
-download_file "https://downloads.mysql.com/archives/get/p/8/file/mysql-workbench-community_8.0.36-1ubuntu22.04_amd64.deb" "mysql-workbench-community_8.0.36-1ubuntu22.04_amd64.deb"
-install_deb "mysql-workbench-community_8.0.36-1ubuntu22.04_amd64.deb"
-
-# DBeaver
-download_file "https://dbeaver.io/files/dbeaver-ce_latest_amd64.deb" "dbeaver-ce_latest_amd64.deb"
-install_deb "dbeaver-ce_latest_amd64.deb"
-
-# Mega.nz
-download_file "https://mega.nz/linux/repo/xUbuntu_22.04/amd64/megasync-xUbuntu_22.04_amd64.deb" "megasync-xUbuntu_22.04_amd64.deb"
-install_deb "megasync-xUbuntu_22.04_amd64.deb"
-
-# youtube-dl
-if [[ ! -f "/usr/local/bin/youtube-dl" ]]; then
-    echo "Downloading youtube-dl..."
-    sudo curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
-    if [[ $? -eq 0 ]]; then
-        sudo chmod a+rx /usr/local/bin/youtube-dl
+# Stage 3: Docker setup
+stage3() {
+    echo "Setting up Docker..."
+    if ! command -v docker &> /dev/null; then
+        sudo install -m 0755 -d /etc/apt/keyrings
+        sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+        check_exit_status
+        sudo chmod a+r /etc/apt/keyrings/docker.asc
+        check_sources_list "/etc/apt/sources.list.d/docker.list" "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable"
     else
-        echo "Error downloading youtube-dl. Exiting."
-        exit 1
+        echo "Docker is already installed."
     fi
-else
-    echo "youtube-dl already exists, skipping download."
-fi
+}
 
-# Download and install Blender
-download_file "https://mirrors.iu13.net/blender/release/Blender4.2/blender-4.2.3-linux-x64.tar.xz"
-extract_tar "blender-4.2.3-linux-x64.tar.xz" "/opt"
-move_file "/opt/blender-4.2.3-linux-x64" "/opt/blender"
-create_symlink "/opt/blender/blender" "/usr/bin/blender"
-create_desktop_entry "~/.local/share/applications/blender.desktop" \
-'[Desktop Entry]\nName=Blender\nExec=blender\nComment=\nTerminal=false\nIcon=/opt/blender/blender.svg\nType=Application'
+# Stage 4: Sublime Text setup
+stage4() {
+    # wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/sublimehq-archive.gpg > /dev/null
+    # echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list
+    download_gpg_key_wget "https://download.sublimetext.com/sublimehq-pub.gpg" "/etc/apt/trusted.gpg.d/sublimehq-archive.gpg"
+    check_sources_list "/etc/apt/sources.list.d/sublime-text.list" "deb https://download.sublimetext.com/ apt/stable/"
+}
 
-# Download and install DataGrip
-download_file "https://download.jetbrains.com/datagrip/datagrip-2024.2.2.tar.gz"
-extract_tar "datagrip-2024.2.2.tar.gz" "/opt"
-move_file "/opt/DataGrip-2024.2.2" "/opt/datagrip"
-run_gui_app "/opt/datagrip/bin/datagrip.sh"
+# Stage 5: Google Cloud SDK setup
+stage5() {
+    # curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg
+    # echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+    download_gpg_key_wget "https://packages.cloud.google.com/apt/doc/apt-key.gpg" "/usr/share/keyrings/cloud.google.gpg"
+    check_sources_list "/etc/apt/sources.list.d/google-cloud-sdk.list" "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main"
+}
 
-# Download and install PhpStorm
-download_file "https://download.jetbrains.com/webide/PhpStorm-2024.2.3.tar.gz"
-extract_tar "PhpStorm-2024.2.3.tar.gz" "/opt"
-move_file "/opt/PhpStorm-242.23339.16" "/opt/phpstorm"
-run_gui_app "/opt/phpstorm/bin/phpstorm.sh"
+# Stage 6: Google Chrome setup
+stage6() {
+    # wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmor -o /usr/share/keyrings/chrome-keyring.gpg
+    # echo "deb [arch=amd64 signed-by=/usr/share/keyrings/chrome-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee -a /etc/apt/sources.list.d/google.list
+    download_gpg_key_wget "https://dl.google.com/linux/linux_signing_key.pub" "/usr/share/keyrings/chrome-keyring.gpg"
+    check_sources_list "/etc/apt/sources.list.d/google.list" "deb [arch=amd64 signed-by=/usr/share/keyrings/chrome-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main"
+}
 
-# Download and install Prusa Slicer
-download_file "https://cdn.prusa3d.com/downloads/drivers/prusa3d_linux_2_8_1.zip"
-download_file "https://raw.githubusercontent.com/prusa3d/PrusaSlicer/master/resources/icons/PrusaSlicer_128px.png"
-extract_zip "prusa3d_linux_2_8_1.zip" "/opt/prusaslicer"
-move_file "/opt/prusaslicer/PrusaSlicer-2.8.1+linux-x64-older-distros-GTK3-202409181354.AppImage" "/opt/prusaslicer/PrusaSlicer.AppImage"
-move_file "PrusaSlicer_128px.png" "/opt/prusaslicer/PrusaSlicer.png"
-sudo rm /opt/prusaslicer/*.txt
-apply_permissions "/opt/prusaslicer/PrusaSlicer.AppImage" "a+rx"
-apply_permissions "/opt/prusaslicer/PrusaSlicer.png" "a+rx"
-create_desktop_entry "~/.local/share/applications/prusaslicer.desktop" \
-'[Desktop Entry]\nName=PrusaSlicer\nExec=/opt/prusaslicer/PrusaSlicer.AppImage\nComment=\nTerminal=false\nIcon=/opt/prusaslicer/PrusaSlicer.png\nType=Application'
+# Stage 7: Spotify setup
+stage7() {
+    # curl -sS https://download.spotify.com/debian/pubkey_6224F9941A8AA6D1.gpg | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/spotify.gpg
+    # echo "deb http://repository.spotify.com stable non-free" | sudo tee /etc/apt/sources.list.d/spotify.list
+    download_gpg_key "https://download.spotify.com/debian/pubkey_6224F9941A8AA6D1.gpg" "/etc/apt/trusted.gpg.d/spotify.gpg"
+    check_sources_list "/etc/apt/sources.list.d/spotify.list" "deb http://repository.spotify.com stable non-free"
+}
 
-# Download and install Ultimaker Cura
-download_file "https://github.com/Ultimaker/Cura/releases/download/5.8.1/UltiMaker-Cura-5.8.1-linux-X64.AppImage"
-download_file "https://upload.wikimedia.org/wikipedia/commons/9/9a/Ultimaker_cura.png"
-sudo mkdir -p /opt/cura
-move_file "UltiMaker-Cura-5.8.1-linux-X64.AppImage" "/opt/cura/Ultimaker_Cura.AppImage"
-move_file "Ultimaker_cura.png" "/opt/cura/Ultimaker_Cura.png"
-apply_permissions "/opt/cura/Ultimaker_Cura.AppImage" "a+rx"
-apply_permissions "/opt/cura/Ultimaker_Cura.png" "a+rx"
-create_desktop_entry "~/.local/share/applications/cura.desktop" \
-'[Desktop Entry]\nName=Ultimaker Cura\nExec=/opt/cura/Ultimaker_Cura.AppImage\nComment=\nTerminal=false\nIcon=/opt/cura/Ultimaker_Cura.png\nType=Application'
+# Stage 8: VSCode setup
+stage8() {
+    if [[ ! -f "/etc/apt/keyrings/packages.microsoft.gpg" ]]; then
+        wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+        check_exit_status
+        sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
+        check_exit_status
+        rm -f packages.microsoft.gpg
+    fi
+    check_sources_list "/etc/apt/sources.list.d/vscode.list" "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main"
+}
 
-# Download and install MeshLab
-download_file "https://github.com/cnr-isti-vclab/meshlab/releases/download/MeshLab-2023.12/MeshLab2023.12-linux.AppImage"
-download_file "https://www.meshlab.net/img/meshlabjsLogo.png"
-sudo mkdir -p /opt/meshlab
-move_file "MeshLab2023.12-linux.AppImage" "/opt/meshlab/MeshLab.AppImage"
-move_file "meshlabjsLogo.png" "/opt/meshlab/MeshLab.png"
-apply_permissions "/opt/meshlab/MeshLab.AppImage" "a+rx"
-apply_permissions "/opt/meshlab/MeshLab.png" "a+rx"
-create_desktop_entry "~/.local/share/applications/meshlab.desktop" \
-'[Desktop Entry]\nName=MeshLab\nExec=/opt/meshlab/MeshLab.AppImage\nComment=\nTerminal=false\nIcon=/opt/meshlab/MeshLab.png\nType=Application'
+# Stage 9: Balena Etcher setup
+stage9() {
+    download_gpg_key "https://dl.cloudsmith.io/public/balena/etcher/gpg.70528471AFF9A051.key" "/usr/share/keyrings/balena-etcher-archive-keyring.gpg"
+    check_sources_list "/etc/apt/sources.list.d/balena-etcher.list" "deb [signed-by=/usr/share/keyrings/balena-etcher-archive-keyring.gpg] https://dl.cloudsmith.io/public/balena/etcher/deb/ubuntu jammy main"
+}
 
-# Download and install tinyMediaManager
-download_file "https://release.tinymediamanager.org/v5/dist/tinyMediaManager-5.0.12-linux-amd64.tar.xz"
-extract_tar "tinyMediaManager-5.0.12-linux-amd64.tar.xz" "/opt"
-sudo chown guillo:guillo -R /opt/tinyMediaManager
-apply_permissions "/opt/tinyMediaManager" "a+rx"
-create_symlink "/opt/tinyMediaManager/tinyMediaManager" "/usr/bin/tinyMediaManager"
-create_desktop_entry "~/.local/share/applications/tinyMediaManager.desktop" \
-'[Desktop Entry]\nName=tinyMediaManager\nExec=tinyMediaManager\nComment=\nTerminal=false\nIcon=/opt/tinyMediaManager/tmm.png\nType=Application'
+# Stage 10: Add other PPAs
+stage10() {
+    repos=(
+        "ppa:ubuntuhandbook1/transmission"
+        "ppa:ubuntuhandbook1/audacity"
+        "ppa:ubuntuhandbook1/vlc"
+        "ppa:ubuntuhandbook1/gimp"
+        "ppa:linrunner/tlp"
+        "ppa:obsproject/obs-studio"
+        "ppa:inkscape.dev/stable"
+        "ppa:ozmartian/apps"
+    )
+    for repo in "${repos[@]}"; do
+        check_ppa "$repo"
+    done
+
+    stage1
+}
+
+# Stage 11: Final software installation
+stage11() {
+    echo "Installing required software..."
+    sudo apt install --install-recommends -y \
+        docker-ce docker-ce-cli containerd.io \
+        docker-buildx-plugin docker-compose-plugin sublime-text google-chrome-stable spotify-client code google-cloud-cli \
+        transmission-gtk balena-etcher-electron shutter obs-studio vidcutter pinta openscad inkscape freecad telegram-desktop \
+        gdebi wine64
+    check_exit_status
+}
+
+stage12() {
+    # Add Docker group and user
+    if ! getent group docker > /dev/null; then
+        sudo groupadd docker
+        echo "Group 'docker' created."
+    else
+        echo "Group 'docker' already exists."
+    fi
+
+    sudo usermod -aG docker "$USER"
+    echo "User $USER added to 'docker' group."
+}
+
+stage13() {
+    # NVM installation
+    curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh -o nvm_install.sh
+    check_exit_status
+    sudo -E bash nvm_install.sh
+    check_exit_status
+}
+
+stage14() {
+    # Node and typescript installation
+    sudo apt install --install-recommends -y node-typescript gnome-shell-extensions
+    check_exit_status
+
+    # Git clone Pop!_OS Shell
+    git clone https://github.com/pop-os/shell.git
+    check_exit_status
+    cd shell || exit
+    git checkout master_jammy
+}
+
+stage15() {
+    # Ask if the device is a notebook
+    read -p "Is this a laptop? (y/n): " is_notebook
+    if [[ "$is_notebook" == "y" || "$is_notebook" == "Y" ]]; then
+        echo "Configuring TLP for battery optimization..."
+        sudo apt remove laptop-mode-tools -y
+        sudo tlp start
+    else
+        echo "Skipping TLP configuration."
+    fi
+}
+
+stage 16() {
+    # download files
+    cd /tmp
+
+
+    # Dropbox
+    download_file "https://www.dropbox.com/download?dl=packages/ubuntu/dropbox_2020.03.04_amd64.deb" "dropbox_2020.03.04_amd64.deb"
+    install_deb "dropbox_2020.03.04_amd64.deb"
+
+    # TeamViewer
+    download_file "https://dl.teamviewer.com/download/linux/version_15x/teamviewer_15.58.4_amd64.deb" "teamviewer_15.58.4_amd64.deb"
+    install_deb "teamviewer_15.58.4_amd64.deb"
+
+    # PDFsam
+    download_file "https://github.com/torakiki/pdfsam/releases/download/v5.2.8/pdfsam_5.2.8-1_amd64.deb" "pdfsam_5.2.8-1_amd64.deb"
+    install_deb "pdfsam_5.2.8-1_amd64.deb"
+
+    # Slack
+    download_file "https://downloads.slack-edge.com/desktop-releases/linux/x64/4.40.133/slack-desktop-4.40.133-amd64.deb" "slack-desktop-4.40.133-amd64.deb"
+    install_deb "slack-desktop-4.40.133-amd64.deb"
+
+    # Discord
+    download_file "https://dl.discordapp.net/apps/linux/0.0.71/discord-0.0.71.deb" "discord-0.0.71.deb"
+    install_deb "discord-0.0.71.deb"
+
+    # Skype
+    download_file "https://repo.skype.com/latest/skypeforlinux-64.deb" "skypeforlinux-64.deb"
+    install_deb "skypeforlinux-64.deb"
+
+    # Zoom
+    download_file "https://zoom.us/client/latest/zoom_amd64.deb" "zoom_amd64.deb"
+    install_deb "zoom_amd64.deb"
+
+    # MySQL Workbench
+    download_file "https://downloads.mysql.com/archives/get/p/8/file/mysql-workbench-community_8.0.36-1ubuntu22.04_amd64.deb" "mysql-workbench-community_8.0.36-1ubuntu22.04_amd64.deb"
+    install_deb "mysql-workbench-community_8.0.36-1ubuntu22.04_amd64.deb"
+
+    # DBeaver
+    download_file "https://dbeaver.io/files/dbeaver-ce_latest_amd64.deb" "dbeaver-ce_latest_amd64.deb"
+    install_deb "dbeaver-ce_latest_amd64.deb"
+
+    # Mega.nz
+    download_file "https://mega.nz/linux/repo/xUbuntu_22.04/amd64/megasync-xUbuntu_22.04_amd64.deb" "megasync-xUbuntu_22.04_amd64.deb"
+    install_deb "megasync-xUbuntu_22.04_amd64.deb"
+
+    # youtube-dl
+    if [[ ! -f "/usr/local/bin/youtube-dl" ]]; then
+        echo "Downloading youtube-dl..."
+        sudo curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
+        if [[ $? -eq 0 ]]; then
+            sudo chmod a+rx /usr/local/bin/youtube-dl
+        else
+            echo "Error downloading youtube-dl. Exiting."
+            exit 1
+        fi
+    else
+        echo "youtube-dl already exists, skipping download."
+    fi
+}
+
+stage17() {
+
+    # Download and install Blender
+    download_file "https://mirrors.iu13.net/blender/release/Blender4.2/blender-4.2.3-linux-x64.tar.xz"
+    extract_tar "blender-4.2.3-linux-x64.tar.xz" "/opt"
+    move_file "/opt/blender-4.2.3-linux-x64" "/opt/blender"
+    create_symlink "/opt/blender/blender" "/usr/bin/blender"
+    create_desktop_entry "~/.local/share/applications/blender.desktop" \
+    '[Desktop Entry]\nName=Blender\nExec=blender\nComment=\nTerminal=false\nIcon=/opt/blender/blender.svg\nType=Application'
+}
+
+stage18() {
+    # Download and install DataGrip
+    download_file "https://download.jetbrains.com/datagrip/datagrip-2024.2.2.tar.gz"
+    extract_tar "datagrip-2024.2.2.tar.gz" "/opt"
+    move_file "/opt/DataGrip-2024.2.2" "/opt/datagrip"
+    run_gui_app "/opt/datagrip/bin/datagrip.sh"
+}
+
+stage19() {
+    # Download and install PhpStorm
+    download_file "https://download.jetbrains.com/webide/PhpStorm-2024.2.3.tar.gz"
+    extract_tar "PhpStorm-2024.2.3.tar.gz" "/opt"
+    move_file "/opt/PhpStorm-242.23339.16" "/opt/phpstorm"
+    run_gui_app "/opt/phpstorm/bin/phpstorm.sh"
+}
+
+stage20() {
+
+    # Download and install Prusa Slicer
+    download_file "https://cdn.prusa3d.com/downloads/drivers/prusa3d_linux_2_8_1.zip"
+    download_file "https://raw.githubusercontent.com/prusa3d/PrusaSlicer/master/resources/icons/PrusaSlicer_128px.png"
+    extract_zip "prusa3d_linux_2_8_1.zip" "/opt/prusaslicer"
+    move_file "/opt/prusaslicer/PrusaSlicer-2.8.1+linux-x64-older-distros-GTK3-202409181354.AppImage" "/opt/prusaslicer/PrusaSlicer.AppImage"
+    move_file "PrusaSlicer_128px.png" "/opt/prusaslicer/PrusaSlicer.png"
+    sudo rm /opt/prusaslicer/*.txt
+    apply_permissions "/opt/prusaslicer/PrusaSlicer.AppImage" "a+rx"
+    apply_permissions "/opt/prusaslicer/PrusaSlicer.png" "a+rx"
+    create_desktop_entry "~/.local/share/applications/prusaslicer.desktop" \
+    '[Desktop Entry]\nName=PrusaSlicer\nExec=/opt/prusaslicer/PrusaSlicer.AppImage\nComment=\nTerminal=false\nIcon=/opt/prusaslicer/PrusaSlicer.png\nType=Application'
+}
+
+stage21() {
+    # Download and install Ultimaker Cura
+    download_file "https://github.com/Ultimaker/Cura/releases/download/5.8.1/UltiMaker-Cura-5.8.1-linux-X64.AppImage"
+    download_file "https://upload.wikimedia.org/wikipedia/commons/9/9a/Ultimaker_cura.png"
+    sudo mkdir -p /opt/cura
+    move_file "UltiMaker-Cura-5.8.1-linux-X64.AppImage" "/opt/cura/Ultimaker_Cura.AppImage"
+    move_file "Ultimaker_cura.png" "/opt/cura/Ultimaker_Cura.png"
+    apply_permissions "/opt/cura/Ultimaker_Cura.AppImage" "a+rx"
+    apply_permissions "/opt/cura/Ultimaker_Cura.png" "a+rx"
+    create_desktop_entry "~/.local/share/applications/cura.desktop" \
+    '[Desktop Entry]\nName=Ultimaker Cura\nExec=/opt/cura/Ultimaker_Cura.AppImage\nComment=\nTerminal=false\nIcon=/opt/cura/Ultimaker_Cura.png\nType=Application'
+}
+
+stage22() {
+    # Download and install MeshLab
+    download_file "https://github.com/cnr-isti-vclab/meshlab/releases/download/MeshLab-2023.12/MeshLab2023.12-linux.AppImage"
+    download_file "https://www.meshlab.net/img/meshlabjsLogo.png"
+    sudo mkdir -p /opt/meshlab
+    move_file "MeshLab2023.12-linux.AppImage" "/opt/meshlab/MeshLab.AppImage"
+    move_file "meshlabjsLogo.png" "/opt/meshlab/MeshLab.png"
+    apply_permissions "/opt/meshlab/MeshLab.AppImage" "a+rx"
+    apply_permissions "/opt/meshlab/MeshLab.png" "a+rx"
+    create_desktop_entry "~/.local/share/applications/meshlab.desktop" \
+    '[Desktop Entry]\nName=MeshLab\nExec=/opt/meshlab/MeshLab.AppImage\nComment=\nTerminal=false\nIcon=/opt/meshlab/MeshLab.png\nType=Application'
+}
+
+stage23() {
+    # Download and install tinyMediaManager
+    download_file "https://release.tinymediamanager.org/v5/dist/tinyMediaManager-5.0.12-linux-amd64.tar.xz"
+    extract_tar "tinyMediaManager-5.0.12-linux-amd64.tar.xz" "/opt"
+    sudo chown guillo:guillo -R /opt/tinyMediaManager
+    apply_permissions "/opt/tinyMediaManager" "a+rx"
+    create_symlink "/opt/tinyMediaManager/tinyMediaManager" "/usr/bin/tinyMediaManager"
+    create_desktop_entry "~/.local/share/applications/tinyMediaManager.desktop" \
+    '[Desktop Entry]\nName=tinyMediaManager\nExec=tinyMediaManager\nComment=\nTerminal=false\nIcon=/opt/tinyMediaManager/tmm.png\nType=Application'
+}
+
+prompt_for_stage
 
 #restart cache
 sudo fc-cache -f -v
