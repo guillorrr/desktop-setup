@@ -1,19 +1,22 @@
 #!/bin/bash
 
-# Function to check the last command's exit status and exit if an error occurs
+# Function to check the last command's exit status and handle failures
 check_exit_status() {
     if [[ $? -ne 0 ]]; then
-        echo "An error occurred. Do you want to continue from a specific stage? (y/n)"
-        read -r continue_from_stage
-        if [[ "$continue_from_stage" == "y" || "$continue_from_stage" == "Y" ]]; then
-            prompt_for_stage
-        else
-            echo "Exiting."
-            exit 1
-        fi
+        echo "An error occurred in the current stage."
+        echo "Options: "
+        echo "1. Retry this stage"
+        echo "2. Skip to the next stage"
+        echo "3. Exit"
+        read -p "Enter your choice (1/2/3): " choice
+        case "$choice" in
+            1) run_stages_from "$current_stage" ;;   # Reintentará la etapa actual
+            2) run_stages_from $((current_stage + 1)) ;;  # Saltará a la siguiente etapa
+            3) echo "Exiting script." && exit 1 ;;
+            *) echo "Invalid choice. Exiting." && exit 1 ;;
+        esac
     fi
 }
-
 # Function to prompt user for stage to continue from
 prompt_for_stage() {
     echo "Choose a stage to continue from:"
